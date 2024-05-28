@@ -9,6 +9,7 @@ from pathlib import Path as P
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, ttk
 from ruamel.yaml import YAML
+import subprocess
 
 
 OUTPUT_PATH = P(__file__).parent
@@ -42,6 +43,10 @@ def login():
             messagebox.showinfo("Login", "Login successful!")
         else:
             messagebox.showerror("Login", "Invalid username or password.")
+
+def signup_script():
+        script_path = 'signup.py'
+        subprocess.run(['python', script_path])
 
 
 window = Tk()
@@ -193,7 +198,7 @@ button_2 = Button(
     image=sign_button,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_2 clicked"),
+    command=signup_script,
     relief="flat"
 )
 button_2.place(
