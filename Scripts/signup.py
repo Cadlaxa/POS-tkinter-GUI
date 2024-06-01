@@ -11,7 +11,7 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, ttk
 from ruamel.yaml import YAML
 
 
-OUTPUT_PATH = P(__file__).parent
+OUTPUT_PATH = P().parent
 ASSETS_PATH = OUTPUT_PATH / P(r"Assets/signup_frame")
 ACCOUNTS_DIR = P('./Accounts')
 ACCOUNTS_DIR.mkdir(exist_ok=True)
