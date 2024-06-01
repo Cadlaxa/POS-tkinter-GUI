@@ -29,23 +29,22 @@ def read_users():
             return yaml.load(file) or {}
     return {}
 
-# Function to write user data to the YAML file
-def write_users(users):
-    with open(USERS_FILE, "w") as file:
-        yaml.dump(users, file)
-
 def relative_to_assets(path: str) -> P:
     return ASSETS_PATH / P(path)
 
 def login():
-        username = entry_1.get()
-        password = entry_2.get()
-        users = read_users()
+    username_or_email = entry_1.get()  # Get the entered username or email
+    password = entry_2.get()
+    users = read_users()
 
-        if username in users and users[username] == password:
+    # Check if the entered username or email exists in users and if the password matches
+    for user_data in users.values():
+        if ('username' in user_data and user_data['username'] == username_or_email and user_data['password'] == password) or \
+           ('email' in user_data and user_data['email'] == username_or_email and user_data['password'] == password):
             messagebox.showinfo("Login", "Login successful!")
-        else:
-            messagebox.showerror("Login", "Invalid username or password.")
+            return
+
+    messagebox.showerror("Login", "Invalid username or email or password.")
 
 def signup_script():
         script_path = "Scripts/signup.py"
@@ -100,18 +99,13 @@ canvas.create_text(90.63092041015625, 363.61956787109375, anchor="nw",
     text="Password", fill="#000000", font=("Montserrat SemiBold", 13 * -1))
 entry_image_2 = PhotoImage(file=relative_to_assets("entry_2.png"))
 entry_bg_2 = canvas.create_image(275.3185272216797, 407.9111785888672, image=entry_image_2)
-entry_2 = Entry(bd=0, bg="#FFFFFF", fg="#000716",highlightthickness=0)
+entry_2 = Entry(bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0, show="*")
 entry_2.place(x=94.95953369140625, y=385.3475341796875, width=360.7179870605469, height=43.127288818359375)
 
 # Login Button
 login_b = PhotoImage(file=relative_to_assets("button_1.png"))
 button_1 = Button(image=login_b, borderwidth=0, highlightthickness=0, command=login, relief="flat")
-button_1.place(
-    x=90.63092041015625,
-    y=453.8741149902344,
-    width=177.36907958984375,
-    height=41.78453063964844
-)
+button_1.place(x=90.63092041015625, y=453.8741149902344, width=177.36907958984375, height=41.78453063964844)
 login_hover = PhotoImage(file=relative_to_assets("button_hover_1.png"))
 def button_1_hover(e):
     button_1.config(

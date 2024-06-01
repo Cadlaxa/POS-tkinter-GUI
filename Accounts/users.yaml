@@ -1,1 +1,18 @@
-pao: test
+user:
+  username: user
+  password: pass
+  email: email
+  first_name: fname
+  last_name: lname
+  contact_number: contact
+  address: address
+  house_number: house
+pao:
+  username: pao
+  password: password
+  email: cadag113003@gmail.com
+  first_name: jhon paolo
+  last_name: cadag
+  contact_number: '1234567890'
+  address: Blk 41 lot 70 Phase 6 Golden City Subd., Brgy, Salawag, Dasmarinas, Cavite
+  house_number: it's a house duh
