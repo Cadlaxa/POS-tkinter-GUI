@@ -28,21 +28,20 @@ def relative_to_assets(path: str) -> P:
     return ASSETS_PATH / P(path)
 
 class ToolTip:
-    def __init__(self, widget, text):
+    def __init__(self, widget):
         self.widget = widget
-        self.text = text
         self.tip_window = None
 
-    def show_tip(self, event):
+    def show_tip(self, event, text):
         if self.tip_window or not event:
             return
-        x = event.x_root + 25
-        y = event.y_root + 25
+        x = event.x_root + 20
+        y = event.y_root + 20
         self.tip_window = tw = tk.Toplevel(self.widget)
         tw.wm_overrideredirect(True)
         tw.wm_geometry("+%d+%d" % (x, y))
-        label = tk.Label(tw, text=self.text, justify=tk.LEFT,
-                         background="#ffffe0", relief=tk.SOLID, borderwidth=1,
+        label = tk.Label(tw, text=text, justify=tk.LEFT,
+                         background="#F0F3F6", relief=tk.SOLID, borderwidth=1,
                          font=("Montserrat SemiBold", 10))
         label.pack(ipadx=1)
 
@@ -54,8 +53,8 @@ class ToolTip:
 
     def update_position(self, event):
         if self.tip_window:
-            x = event.x_root + 25
-            y = event.y_root + 25
+            x = event.x_root + 20
+            y = event.y_root + 20
             self.tip_window.wm_geometry("+%d+%d" % (x, y))
 
 def signup_script():
@@ -122,18 +121,18 @@ def button_1_leave(e):
 button_1.bind('<Enter>', button_1_hover)
 button_1.bind('<Leave>', button_1_leave)
 # Create and bind the tooltip
-tooltip = ToolTip(button_1, "everyone, available ba kayo tonight ng 9:30? I'm here to explain my side of the story.")
-def on_enter(event):
+tooltip_1 = ToolTip(button_1)
+def on_enter_1(event):
     button_1_hover(event)
-    tooltip.show_tip(event)
-def on_leave(event):
+    tooltip_1.show_tip(event, "cupkakke \n jiafei.")
+def on_leave_1(event):
     button_1_leave(event)
-    tooltip.hide_tip(event)
-def on_motion(event):
-    tooltip.update_position(event)
-button_1.bind('<Enter>', on_enter)
-button_1.bind('<Leave>', on_leave)
-button_1.bind('<Motion>', on_motion)
+    tooltip_1.hide_tip(event)
+def on_motion_1(event):
+    tooltip_1.update_position(event)
+button_1.bind('<Enter>', on_enter_1)
+button_1.bind('<Leave>', on_leave_1)
+button_1.bind('<Motion>', on_motion_1)
 
 # Original (authentic)
 orig_img = PhotoImage(file=relative_to_assets("button_2.png"))
@@ -147,18 +146,18 @@ def button_2_leave(e):
 button_2.bind('<Enter>', button_2_hover)
 button_2.bind('<Leave>', button_2_leave)
 # Create and bind the tooltip
-tooltip = ToolTip(button_2, "everyone, available ba kayo tonight ng 9:30? I'm here to explain my side of the story.")
-def on_enter(event):
+tooltip_2 = ToolTip(button_2)
+def on_enter_2(event):
     button_2_hover(event)
-    tooltip.show_tip(event)
-def on_leave(event):
+    tooltip_2.show_tip(event, "si vhal and si ano HAHAHHHH.")
+def on_leave_2(event):
     button_2_leave(event)
-    tooltip.hide_tip(event)
-def on_motion(event):
-    tooltip.update_position(event)
-button_2.bind('<Enter>', on_enter)
-button_2.bind('<Leave>', on_leave)
-button_2.bind('<Motion>', on_motion)
+    tooltip_2.hide_tip(event)
+def on_motion_2(event):
+    tooltip_2.update_position(event)
+button_2.bind('<Enter>', on_enter_2)
+button_2.bind('<Leave>', on_leave_2)
+button_2.bind('<Motion>', on_motion_2)
 
 # Cartoon
 cartoon_img = PhotoImage(file=relative_to_assets("button_3.png"))
@@ -172,18 +171,18 @@ def button_3_leave(e):
 button_3.bind('<Enter>', button_3_hover)
 button_3.bind('<Leave>', button_3_leave)
 # Create and bind the tooltip
-tooltip = ToolTip(button_3, "everyone, available ba kayo tonight ng 9:30? I'm here to explain my side of the story.")
-def on_enter(event):
+tooltip_3 = ToolTip(button_3)
+def on_enter_3(event):
     button_3_hover(event)
-    tooltip.show_tip(event)
-def on_leave(event):
+    tooltip_3.show_tip(event, "test placeholder.")
+def on_leave_3(event):
     button_3_leave(event)
-    tooltip.hide_tip(event)
-def on_motion(event):
-    tooltip.update_position(event)
-button_3.bind('<Enter>', on_enter)
-button_3.bind('<Leave>', on_leave)
-button_3.bind('<Motion>', on_motion)
+    tooltip_3.hide_tip(event)
+def on_motion_3(event):
+    tooltip_3.update_position(event)
+button_3.bind('<Enter>', on_enter_3)
+button_3.bind('<Leave>', on_leave_3)
+button_3.bind('<Motion>', on_motion_3)
 
 # Nendoroid
 nendo_img = PhotoImage(file=relative_to_assets("button_4.png"))
@@ -197,18 +196,18 @@ def button_4_leave(e):
 button_4.bind('<Enter>', button_4_hover)
 button_4.bind('<Leave>', button_4_leave)
 # Create and bind the tooltip
-tooltip = ToolTip(button_4, "everyone, available ba kayo tonight ng 9:30? I'm here to explain my side of the story.")
-def on_enter(event):
+tooltip_4 = ToolTip(button_4)
+def on_enter_4(event):
     button_4_hover(event)
-    tooltip.show_tip(event)
-def on_leave(event):
+    tooltip_4.show_tip(event, "tooltip\ntest\nplaceholder.")
+def on_leave_4(event):
     button_4_leave(event)
-    tooltip.hide_tip(event)
-def on_motion(event):
-    tooltip.update_position(event)
-button_4.bind('<Enter>', on_enter)
-button_4.bind('<Leave>', on_leave)
-button_4.bind('<Motion>', on_motion)
+    tooltip_4.hide_tip(event)
+def on_motion_4(event):
+    tooltip_4.update_position(event)
+button_4.bind('<Enter>', on_enter_4)
+button_4.bind('<Leave>', on_leave_4)
+button_4.bind('<Motion>', on_motion_4)
 
 window.resizable(False, False)
 window.mainloop()
