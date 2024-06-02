@@ -60,7 +60,7 @@ def create_account():
     new_username = nname.get()
     new_password = password.get()
     confirm_password = password_confirm.get()
-    
+
     # Check if all required fields are filled
     if not new_username or not new_password or not new_email or not new_fname or not new_lname or not new_cont or not new_address or not new_house:
         messagebox.showerror("Signup", "All fields are required.")
@@ -70,8 +70,6 @@ def create_account():
     else:
         users = read_users()
         if new_username in users:
-            messagebox.showerror("Signup", "Username already exists.")
-        else:
             users[new_username] = {
                 'username': new_username,
                 'password': new_password,
@@ -118,9 +116,9 @@ logo = PhotoImage(file=relative_to_assets("image_6.png"))
 image_6 = canvas.create_image(105.0, 63.0, image=logo)
 
 canvas.create_text(97.0, 117.0, anchor="nw",
-    text="Hello,", fill="#06D6A0", font=("Montserrat Regular", 40 * -1))
+    text="Oh no!", fill="#06D6A0", font=("Montserrat Regular", 40 * -1))
 canvas.create_text(97.0, 155.1761474609375, anchor="nw",
-    text="New User!", fill="#06D6A0", font=("Montserrat Black", 48 * -1))
+    text="You Forgot", fill="#06D6A0", font=("Montserrat Black", 48 * -1))
 
 # Last name entry
 lname_img = PhotoImage(file=relative_to_assets("entry_3.png"))

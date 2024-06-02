@@ -49,6 +49,9 @@ def login():
 def signup_script():
         script_path = "Scripts/signup.py"
         subprocess.run(['python', script_path])
+def forgot_script():
+        script_path = "Scripts/I_forgot.py"
+        subprocess.run(['python', script_path])
 
 def icon(window):
     img = PhotoImage(file=ICON)
@@ -136,7 +139,7 @@ button_2.bind('<Leave>', button_2_leave)
 
 # Forgot Button
 I_forgor = PhotoImage(file=relative_to_assets("button_3.png"))
-button_3 = Button(image=I_forgor, borderwidth=0, highlightthickness=0, command=signup_script, relief="flat")
+button_3 = Button(image=I_forgor, borderwidth=0, highlightthickness=0, command=forgot_script, relief="flat")
 button_3.place(x=91.0, y=511.0, width=371.0, height=41.78453063964844)
 forgor_hover = PhotoImage(file=relative_to_assets("button_hover_3.png"))
 def button_3_hover(e):
