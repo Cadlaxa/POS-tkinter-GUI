@@ -121,6 +121,19 @@ def button_1_leave(e):
     button_1.config(image=resin_img)
 button_1.bind('<Enter>', button_1_hover)
 button_1.bind('<Leave>', button_1_leave)
+# Create and bind the tooltip
+tooltip = ToolTip(button_1, "everyone, available ba kayo tonight ng 9:30? I'm here to explain my side of the story.")
+def on_enter(event):
+    button_1_hover(event)
+    tooltip.show_tip(event)
+def on_leave(event):
+    button_1_leave(event)
+    tooltip.hide_tip(event)
+def on_motion(event):
+    tooltip.update_position(event)
+button_1.bind('<Enter>', on_enter)
+button_1.bind('<Leave>', on_leave)
+button_1.bind('<Motion>', on_motion)
 
 # Original (authentic)
 orig_img = PhotoImage(file=relative_to_assets("button_2.png"))
@@ -133,6 +146,19 @@ def button_2_leave(e):
     button_2.config(image=orig_img)
 button_2.bind('<Enter>', button_2_hover)
 button_2.bind('<Leave>', button_2_leave)
+# Create and bind the tooltip
+tooltip = ToolTip(button_2, "everyone, available ba kayo tonight ng 9:30? I'm here to explain my side of the story.")
+def on_enter(event):
+    button_2_hover(event)
+    tooltip.show_tip(event)
+def on_leave(event):
+    button_2_leave(event)
+    tooltip.hide_tip(event)
+def on_motion(event):
+    tooltip.update_position(event)
+button_2.bind('<Enter>', on_enter)
+button_2.bind('<Leave>', on_leave)
+button_2.bind('<Motion>', on_motion)
 
 # Cartoon
 cartoon_img = PhotoImage(file=relative_to_assets("button_3.png"))
@@ -145,6 +171,19 @@ def button_3_leave(e):
     button_3.config(image=cartoon_img)
 button_3.bind('<Enter>', button_3_hover)
 button_3.bind('<Leave>', button_3_leave)
+# Create and bind the tooltip
+tooltip = ToolTip(button_3, "everyone, available ba kayo tonight ng 9:30? I'm here to explain my side of the story.")
+def on_enter(event):
+    button_3_hover(event)
+    tooltip.show_tip(event)
+def on_leave(event):
+    button_3_leave(event)
+    tooltip.hide_tip(event)
+def on_motion(event):
+    tooltip.update_position(event)
+button_3.bind('<Enter>', on_enter)
+button_3.bind('<Leave>', on_leave)
+button_3.bind('<Motion>', on_motion)
 
 # Nendoroid
 nendo_img = PhotoImage(file=relative_to_assets("button_4.png"))
@@ -157,7 +196,6 @@ def button_4_leave(e):
     button_4.config(image=nendo_img)
 button_4.bind('<Enter>', button_4_hover)
 button_4.bind('<Leave>', button_4_leave)
-
 # Create and bind the tooltip
 tooltip = ToolTip(button_4, "everyone, available ba kayo tonight ng 9:30? I'm here to explain my side of the story.")
 def on_enter(event):
