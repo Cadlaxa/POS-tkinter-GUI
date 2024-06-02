@@ -42,6 +42,8 @@ def login():
         if ('username' in user_data and user_data['username'] == username_or_email and user_data['password'] == password) or \
            ('email' in user_data and user_data['email'] == username_or_email and user_data['password'] == password):
             messagebox.showinfo("Login", "Login successful!")
+            window.destroy()
+            categ_script()
             return
 
     messagebox.showerror("Login", "Invalid username or email or password.")
@@ -51,6 +53,9 @@ def signup_script():
         subprocess.run(['python', script_path])
 def forgot_script():
         script_path = "Scripts/I_forgot.py"
+        subprocess.run(['python', script_path])
+def categ_script():
+        script_path = "Scripts/categories.py"
         subprocess.run(['python', script_path])
 
 def icon(window):

@@ -8,6 +8,7 @@ cd \python%python_ver%\Scripts\
 pip install tk
 pip install ruamel.yaml
 pip install pillow
+pip install customtkinter
 
 echo INSTALLATION COMPLETE!
 pause
