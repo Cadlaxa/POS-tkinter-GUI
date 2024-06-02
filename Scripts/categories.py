@@ -57,12 +57,11 @@ class ToolTip:
             y = event.y_root + 20
             self.tip_window.wm_geometry("+%d+%d" % (x, y))
 
-def signup_script():
-    script_path = "Scripts/signup.py"
+def cartoon_script(event):
+    script_path = "Scripts/category_descriptions/cartoon.py"
     subprocess.run(['python', script_path])
-
-def forgot_script():
-    script_path = "Scripts/I_forgot.py"
+def nendo_script(event):
+    script_path = "Scripts/category_descriptions/nendoroid.py"
     subprocess.run(['python', script_path])
 
 def icon(window):
@@ -170,6 +169,7 @@ def button_3_leave(e):
     button_3.config(image=cartoon_img)
 button_3.bind('<Enter>', button_3_hover)
 button_3.bind('<Leave>', button_3_leave)
+button_3.bind('<Button-3>', cartoon_script)
 # Create and bind the tooltip
 tooltip_3 = ToolTip(button_3)
 def on_enter_3(event):
@@ -195,6 +195,7 @@ def button_4_leave(e):
     button_4.config(image=nendo_img)
 button_4.bind('<Enter>', button_4_hover)
 button_4.bind('<Leave>', button_4_leave)
+button_4.bind('<Button-3>', nendo_script)
 # Create and bind the tooltip
 tooltip_4 = ToolTip(button_4)
 def on_enter_4(event):
