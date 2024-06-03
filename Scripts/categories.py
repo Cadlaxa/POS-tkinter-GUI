@@ -173,7 +173,7 @@ button_3.bind('<Button-3>', cartoon_script)
 tooltip_3 = ToolTip(button_3)
 def on_enter_3(event):
     button_3_hover(event)
-    tooltip_3.show_tip(event, "test placeholder.")
+    tooltip_3.show_tip(event, "The Cartoon Figures feature cute, and adorable\ncompanions in collectible form!\n\n(Right click for more info!)")
 def on_leave_3(event):
     button_3_leave(event)
     tooltip_3.hide_tip(event)
@@ -199,7 +199,7 @@ button_4.bind('<Button-3>', nendo_script)
 tooltip_4 = ToolTip(button_4)
 def on_enter_4(event):
     button_4_hover(event)
-    tooltip_4.show_tip(event, "tooltip\ntest\nplaceholder.")
+    tooltip_4.show_tip(event, "The Nendoroid series features cute,\nchibi-style figures that fit in the\npalm of your hand\n\n(Right click for more info!).")
 def on_leave_4(event):
     button_4_leave(event)
     tooltip_4.hide_tip(event)
