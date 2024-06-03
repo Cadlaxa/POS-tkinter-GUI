@@ -90,6 +90,12 @@ def cartoon_script(event):
 def nendo_script(event):
     script_path = "Scripts/category_descriptions/nendoroid.py"
     subprocess.run(['python', script_path])
+def authentic_script(event):
+    script_path = "Scripts/category_descriptions/authentic.py"
+    subprocess.run(['python', script_path])
+def resin_script(event):
+    script_path = "Scripts/category_descriptions/resin.py"
+    subprocess.run(['python', script_path])
 def authentic_product():
     script_path = "Scripts/authentic.py"
     subprocess.run(['python', script_path])
@@ -151,11 +157,12 @@ def button_1_leave(e):
     button_1.config(image=resin_img)
 button_1.bind('<Enter>', button_1_hover)
 button_1.bind('<Leave>', button_1_leave)
+button_1.bind('<Button-3>', resin_script)
 # Create and bind the tooltip
 tooltip_1 = ToolTip(button_1)
 def on_enter_1(event):
     button_1_hover(event)
-    tooltip_1.show_tip(event, "cupkakke \n jiafei.")
+    tooltip_1.show_tip(event, "Resin Copy Figurines are stunning replicas \nthat was crafted from High-Quality resin\n\n(Right click for more info!)")
 def on_leave_1(event):
     button_1_leave(event)
     tooltip_1.hide_tip(event)
@@ -176,11 +183,12 @@ def button_2_leave(e):
     button_2.config(image=orig_img)
 button_2.bind('<Enter>', button_2_hover)
 button_2.bind('<Leave>', button_2_leave)
+button_2.bind('<Button-3>', authentic_script)
 # Create and bind the tooltip
 tooltip_2 = ToolTip(button_2)
 def on_enter_2(event):
     button_2_hover(event)
-    tooltip_2.show_tip(event, "si vhal and si ano HAHAHHHH.")
+    tooltip_2.show_tip(event, "Authentic Figurines are crafted \nwith exceptional attention to \ncarefully detail each model\n\n(Right click for more info!)")
 def on_leave_2(event):
     button_2_leave(event)
     tooltip_2.hide_tip(event)

@@ -11,6 +11,7 @@ import tkinter as tk
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, ttk
 from ruamel.yaml import YAML
 import subprocess
+from PIL import Image, ImageTk
 
 OUTPUT_PATH = P().parent
 ASSETS_PATH = OUTPUT_PATH / P(r"Assets/products/authentic_castoria")
@@ -37,6 +38,17 @@ def icon(window):
     img = PhotoImage(file=ICON)
     window.tk.call('wm', 'iconphoto', window._w, img)
 
+def load_and_resize_image(path, scale_factor):
+    # Load the image using Pillow
+    image = Image.open(path)
+    # Calculate new dimensions
+    new_width = int(image.width * scale_factor)
+    new_height = int(image.height * scale_factor)
+    # Resize the image
+    resized_image = image.resize((new_width, new_height), Image.LANCZOS)
+    return ImageTk.PhotoImage(resized_image)
+scale_factor = 0.97
+
 # Function to write data to a YAML file
 def write_to_yaml(data):
     yaml = YAML()
@@ -54,9 +66,11 @@ def remove_items_on_cart():
             if 'cart' in cart_data and 'items' in cart_data['cart']:
                 for item in cart_data['cart']['items']:
                     name = item.get('Name', '')
-                    price = item.get('Item Price (Brand New)', '')
+                    price = item.get('Item Price', '')
+                    price1 = item.get('Total Price (with or w/o box)', '')
+                    packaging = item.get('Packaging', '')
                     quantity = item.get('quantity', '')
-                    tree.insert('', 'end', values=(name, price, quantity))
+                    tree.insert('', 'end', values=(name, price, price1, packaging, quantity))
         except FileNotFoundError:
             print("Cart file not found.")
 
@@ -70,8 +84,8 @@ def remove_items_on_cart():
     def update_cart_file(tree):
         cart_data = {'cart': {'items': []}}
         for item in tree.get_children():
-            name, price, quantity = tree.item(item, 'values')
-            cart_data['cart']['items'].append({'Name': name, 'Item Price (Brand New)': price, 'quantity': quantity})
+            name, price, price1, packaging, quantity = tree.item(item, 'values')
+            cart_data['cart']['items'].append({'Name': name, 'Item Price': price, 'Total Price (with or w/o box)': price1, 'Packaging': packaging,'quantity': quantity})
         with open(CART_FILE, 'w', encoding='utf-8') as file:
             yaml.dump(cart_data, file)
 
@@ -79,10 +93,17 @@ def remove_items_on_cart():
         remove_window = tk.Toplevel()
         remove_window.title("Remove Item/s")
         # Add treeview to display selected item
-        remove_tree = ttk.Treeview(remove_window, columns=('Name', 'Price', 'Quantity'), show='headings')
+        remove_tree = ttk.Treeview(remove_window, columns=('Name', 'Price', 'Total Price', 'Packaging', 'Quantity'), show='headings')
         remove_tree.heading('Name', text='Name')
-        remove_tree.heading('Price', text='Price (Brand New)')
+        remove_tree.heading('Price', text='Price')
+        remove_tree.heading('Total Price', text='Total Price')
+        remove_tree.heading('Packaging', text='Packaging Type')
         remove_tree.heading('Quantity', text='Quantity')
+        remove_tree.column('Name', width=300, anchor='w')
+        remove_tree.column('Price', width=80, anchor='c')
+        remove_tree.column('Total Price', width=80, anchor='c')
+        remove_tree.column('Packaging', width=120, anchor='c')
+        remove_tree.column('Quantity', width=60, anchor='c')
         remove_tree.pack()
         # Load items from cart into the treeview
         load_cart_items(remove_tree)
@@ -93,23 +114,33 @@ def remove_items_on_cart():
     remove_item_window()
 
 # Command function for the "Buy brand new" button
-def buy_brand_new():
+def buy_product(is_brand_new):
+    packaging_options = {
+        0: "No box",
+        1: "Box",
+        2: "Clampshell"
+    }
     def add_to_cart(quantity, packaging_type):
+        if is_brand_new:
+            base_price = brand_new
+        else:
+            base_price = pre_owned
+
         if packaging_type == 0:  # No box
-            total_price = brand_new + no_box
+            total_price = base_price + no_box
         elif packaging_type == 1:  # Box
-            total_price = brand_new + box_price
+            total_price = base_price + box_price
         elif packaging_type == 2:  # Clampshell
-            total_price = brand_new + clampshell_price
+            total_price = base_price + clampshell_price
         data = {
             'cart': {
                 'items': [
-                    {'Name': Product, 'Item Price (Brand New)': f'₱{brand_new}', 'Total Price (with or w/o box)': f'₱{total_price * quantity}', 'quantity': quantity}
+                    {'Name': Product, 'Item Price': f'₱{base_price}', 'Packaging': packaging_options[packaging_type], 'Total Price (with or w/o box)': f'₱{total_price * quantity}', 'quantity': quantity}
                 ]
             }
         }
         write_to_yaml(data)
-        messagebox.showinfo("Item Added", f"{quantity}x Brand new Figure added to cart")
+        messagebox.showinfo("Item Added", f"{quantity}x {'Brand new' if is_brand_new else 'Pre-owned'} Figure added to cart")
 
     def update_quantity(change):
         nonlocal quantity
@@ -181,6 +212,7 @@ image_3 = canvas.create_image(145.990478515625, 61.44598388671875, image=image_i
 image_image_4 = PhotoImage(file=relative_to_assets("image_4.png"))
 image_4 = canvas.create_image(189.66064453125, 362.67041015625, image=image_image_4)
 
+# Product Images
 image_image_5 = PhotoImage(file=relative_to_assets("image_5.png"))
 image_5 = canvas.create_image(190.971923828125, 344.98175048828125, image=image_image_5)
 
@@ -225,13 +257,13 @@ button_2.bind('<Leave>', button_2_leave)
 
 # Buy brand new
 button_image_3 = PhotoImage(file=relative_to_assets("button_3.png"))
-button_3 = Button(image=button_image_3, borderwidth=0, highlightthickness=0, command=buy_brand_new, relief="flat")
+button_3 = Button(image=button_image_3, borderwidth=0, highlightthickness=0, command=lambda: buy_product(True), relief="flat")
 button_3.place(x=745.0, y=527.0, width=170.00001525878906,height=39.08679962158203)
 
 # Buy pre-owned
 button_image_4 = PhotoImage(file=relative_to_assets("button_4.png"))
 button_4 = Button(image=button_image_4, borderwidth=0,highlightthickness=0,
-    command=lambda: print("button_4 clicked"), relief="flat")
+    command=lambda: buy_product(False), relief="flat")
 button_4.place(x=923.0, y=527.0, width=171.0, height=39.08679962158203)
 
 image_image_8 = PhotoImage(file=relative_to_assets("image_8.png"))
