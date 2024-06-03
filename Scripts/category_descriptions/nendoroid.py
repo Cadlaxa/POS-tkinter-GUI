@@ -32,7 +32,7 @@ window = Tk()
 window.geometry("573x470")
 window.configure(bg = "#FFFFFF")
 window.title("Nendoroids")
-icon(window)
+
 
 canvas = Canvas(
     window,
@@ -100,5 +100,6 @@ image_1 = canvas.create_image(
     332.0,
     image=image_image_1
 )
+icon(window)
 window.resizable(False, False)
 window.mainloop()

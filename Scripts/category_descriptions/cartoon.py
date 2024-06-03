@@ -32,7 +32,6 @@ window = Tk()
 window.geometry("573x545")
 window.configure(bg = "#FFFFFF")
 window.title("Cartoon Figures")
-icon(window)
 
 canvas = Canvas(
     window,
@@ -100,5 +99,6 @@ def button_1_leave(e):
 button_1.bind('<Enter>', button_1_hover)
 button_1.bind('<Leave>', button_1_leave)
 
+icon(window)
 window.resizable(False, False)
 window.mainloop()

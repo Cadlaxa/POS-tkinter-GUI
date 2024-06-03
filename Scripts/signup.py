@@ -90,7 +90,6 @@ window = Tk()
 window.geometry("1080x616")
 window.configure(bg = "#FFFFFF")
 window.title("Welcome to Arti-san")
-icon(window)
 
 canvas = Canvas(window, bg = "#FFFFFF", height = 616, width = 1079, bd = 0, highlightthickness = 0, relief = "ridge")
 canvas.place(x = 0, y = 0)
@@ -227,5 +226,6 @@ def button_1_leave(e):
 button_1.bind('<Enter>', button_1_hover)
 button_1.bind('<Leave>', button_1_leave)
 
+icon(window)
 window.resizable(False, False)
 window.mainloop()

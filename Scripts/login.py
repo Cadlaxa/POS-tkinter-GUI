@@ -66,7 +66,6 @@ window = Tk()
 window.geometry("1080x616")
 window.configure(bg = "#FFFFFF")
 window.title("Welcome to Arti-san")
-icon(window)
 
 canvas = Canvas(window, bg = "#FFFFFF", height = 616, width = 1080, bd = 0, highlightthickness = 0, relief = "ridge")
 canvas.place(x = 0, y = 0)
@@ -169,5 +168,6 @@ canvas.create_text(773.0, 33.0, anchor="nw",
     text="Arti-san\n", fill="#FFFFFF", font=("Montserrat ExtraBold", 15 * -1)
 )
 
+icon(window)
 window.resizable(False, False)
 window.mainloop()
