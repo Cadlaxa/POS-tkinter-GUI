@@ -90,8 +90,11 @@ def cartoon_script(event):
 def nendo_script(event):
     script_path = "Scripts/category_descriptions/nendoroid.py"
     subprocess.run(['python', script_path])
-def authentic_script():
+def authentic_product():
     script_path = "Scripts/authentic.py"
+    subprocess.run(['python', script_path])
+def nendo_product():
+    script_path = "Scripts/nendoroid.py"
     subprocess.run(['python', script_path])
 
 def icon(window):
@@ -164,7 +167,7 @@ button_1.bind('<Motion>', on_motion_1)
 
 # Original (authentic)
 orig_img = PhotoImage(file=relative_to_assets("button_2.png"))
-button_2 = Button(image=orig_img, borderwidth=0, highlightthickness=0, command=authentic_script, relief="flat")
+button_2 = Button(image=orig_img, borderwidth=0, highlightthickness=0, command=authentic_product, relief="flat")
 button_2.place(x=36.0, y=211.0, width=527.0, height=178.0)
 button_image_hover_2 = PhotoImage(file=relative_to_assets("button_hover_2.png"))
 def button_2_hover(e):
@@ -215,7 +218,7 @@ button_3.bind('<Motion>', on_motion_3)
 
 # Nendoroid
 nendo_img = PhotoImage(file=relative_to_assets("button_4.png"))
-button_4 = Button(image=nendo_img, borderwidth=0, highlightthickness=0, command=lambda: print("button_4 clicked"), relief="flat")
+button_4 = Button(image=nendo_img, borderwidth=0, highlightthickness=0, command=nendo_product, relief="flat")
 button_4.place(x=37.0, y=402.0, width=527.0, height=178.0)
 button_image_hover_4 = PhotoImage(file=relative_to_assets("button_hover_4.png"))
 def button_4_hover(e):

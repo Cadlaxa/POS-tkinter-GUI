@@ -26,8 +26,9 @@ Product = "Fate Grand Order: Caster/Altria Caster (3rd Ascension)"
 brand_new = 10345
 pre_owned = 9310
 
-box_price = 10
-clampshell_price = 15
+no_box = -200
+box_price = 200
+clampshell_price = 300
 
 def relative_to_assets(path: str) -> P:
     return ASSETS_PATH / P(path)
@@ -42,11 +43,60 @@ def write_to_yaml(data):
     with open(CART_FILE, 'w', encoding='utf-8') as file:
         yaml.dump(data, file)
 
+def remove_items_on_cart():
+    def load_cart_items(tree):
+        try:
+            with open(CART_FILE, 'r', encoding='utf-8') as file:
+                cart_data = yaml.load(file)
+            # Clear existing items in treeview
+            tree.delete(*tree.get_children())
+            # Populate treeview with items from cart
+            if 'cart' in cart_data and 'items' in cart_data['cart']:
+                for item in cart_data['cart']['items']:
+                    name = item.get('Name', '')
+                    price = item.get('Item Price (Brand New)', '')
+                    quantity = item.get('quantity', '')
+                    tree.insert('', 'end', values=(name, price, quantity))
+        except FileNotFoundError:
+            print("Cart file not found.")
+
+    def remove_selected_item(tree):
+        selected_item = tree.selection()
+        if selected_item:
+            # Remove selected item from treeview
+            tree.delete(selected_item)
+            update_cart_file(tree)
+
+    def update_cart_file(tree):
+        cart_data = {'cart': {'items': []}}
+        for item in tree.get_children():
+            name, price, quantity = tree.item(item, 'values')
+            cart_data['cart']['items'].append({'Name': name, 'Item Price (Brand New)': price, 'quantity': quantity})
+        with open(CART_FILE, 'w', encoding='utf-8') as file:
+            yaml.dump(cart_data, file)
+
+    def remove_item_window():
+        remove_window = tk.Toplevel()
+        remove_window.title("Remove Item/s")
+        # Add treeview to display selected item
+        remove_tree = ttk.Treeview(remove_window, columns=('Name', 'Price', 'Quantity'), show='headings')
+        remove_tree.heading('Name', text='Name')
+        remove_tree.heading('Price', text='Price (Brand New)')
+        remove_tree.heading('Quantity', text='Quantity')
+        remove_tree.pack()
+        # Load items from cart into the treeview
+        load_cart_items(remove_tree)
+        # Button to remove selected item
+        remove_button = Button(remove_window, text="Remove Item/s", bg="#31F5C2", font=("Montserrat ExtraBold", 10), command=lambda: remove_selected_item(remove_tree))
+        remove_button.pack()
+        icon(remove_window)
+    remove_item_window()
+
 # Command function for the "Buy brand new" button
 def buy_brand_new():
     def add_to_cart(quantity, packaging_type):
         if packaging_type == 0:  # No box
-            total_price = brand_new
+            total_price = brand_new + no_box
         elif packaging_type == 1:  # Box
             total_price = brand_new + box_price
         elif packaging_type == 2:  # Clampshell
@@ -74,7 +124,6 @@ def buy_brand_new():
         quantity_window.destroy()
 
     quantity = 1
-    
     quantity_window = tk.Toplevel()
     quantity_window.title("Add Quantity")
 
@@ -86,16 +135,16 @@ def buy_brand_new():
 
     quantity_entry = Entry(center_frame, width=15, font=("Montserrat SemiBold", 10))
     quantity_entry.insert(0, str(quantity))
-    quantity_entry.grid(row=0, column=1, padx=10)
+    quantity_entry.grid(row=0, column=1, padx=5)
 
     plus_button = Button(center_frame, text="+", command=lambda: update_quantity(1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
-    plus_button.grid(row=0, column=2, padx=10)
+    plus_button.grid(row=0, column=3, padx=10, sticky="we")
 
     minus_button = Button(center_frame, text="-", command=lambda: update_quantity(-1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
-    minus_button.grid(row=0, column=3)
+    minus_button.grid(row=0, column=2, sticky="we")
 
-    confirm_button = Button(center_frame, text="Confirm", command=confirm_quantity, bg="#31F5C2", font=("Montserrat ExtraBold", 10))
-    confirm_button.grid(row=1, column=0, columnspan=4, pady=(20,5))
+    confirm_button = Button(center_frame, text="Confirm", command=confirm_quantity, bg="#FFD166", font=("Montserrat ExtraBold", 10))
+    confirm_button.grid(row=1, column=0, columnspan=4, pady=(20,5), sticky="we")
 
     # Create a frame for the radio buttons
     radio_frame = ttk.Frame(center_frame)
@@ -106,9 +155,9 @@ def buy_brand_new():
     packaging_var.set(0) 
 
     # Radio buttons for packaging type
-    ttk.Radiobutton(radio_frame, text="No box", variable=packaging_var, value=0).grid(row=0, column=0, padx=10)
-    ttk.Radiobutton(radio_frame, text="Box (+₱10)", variable=packaging_var, value=1).grid(row=0, column=1, padx=10)
-    ttk.Radiobutton(radio_frame, text="Clampshell (+₱15)", variable=packaging_var, value=2).grid(row=0, column=2, padx=10)
+    ttk.Radiobutton(radio_frame, text="No box (-₱200 on base price)", variable=packaging_var, value=0).grid(row=0, column=0, padx=10)
+    ttk.Radiobutton(radio_frame, text="Box (+₱200)", variable=packaging_var, value=1).grid(row=0, column=1, padx=10)
+    ttk.Radiobutton(radio_frame, text="Clampshell (+₱300)", variable=packaging_var, value=2).grid(row=0, column=2, padx=10)
     icon(quantity_window)
 
 window = Tk()
@@ -144,7 +193,7 @@ image_7 = canvas.create_image(537.0, 474.0, image=image_image_7)
 # Remove Item on Cart
 button_image_1 = PhotoImage(file=relative_to_assets("button_1.png"))
 button_1 = Button(image=button_image_1, borderwidth=0, highlightthickness=0,
-    command=lambda: print("button_1 clicked"), relief="flat")
+    command=remove_items_on_cart, relief="flat")
 button_1.place(x=694.0, y=35.69354248046875, width=220.06515502929688, height=51.21247863769531)
 button_image_hover_1 = PhotoImage(file=relative_to_assets("button_hover_1.png"))
 def button_1_hover(e):
