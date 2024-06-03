@@ -33,7 +33,6 @@ window.geometry("573x470")
 window.configure(bg = "#FFFFFF")
 window.title("Nendoroids")
 
-
 canvas = Canvas(
     window,
     bg = "#FFFFFF",

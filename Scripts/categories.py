@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import Tk, Canvas, Button, PhotoImage
 from ruamel.yaml import YAML
 import subprocess
+import time
 
 OUTPUT_PATH = P().parent
 ASSETS_PATH = OUTPUT_PATH / P(r"Assets/categ_frame")
@@ -57,11 +58,41 @@ class ToolTip:
             y = event.y_root + 20
             self.tip_window.wm_geometry("+%d+%d" % (x, y))
 
+def count_items_in_cart():    # use this function sa cart text     (count_items_in_cart())
+    # Path to the cart YAML file
+    CART_FILE = P('./Accounts/cart.yaml')
+    try:
+        yaml = YAML()
+        with open(CART_FILE, 'r', encoding='utf-8') as file:
+            cart_data = yaml.load(file)
+
+        # Initialize counters
+        total_items = 0
+        total_quantity = 0
+        # Loop through items in the cart
+        if 'cart' in cart_data and 'items' in cart_data['cart']:
+            for item in cart_data['cart']['items']:
+                quantity = item.get('quantity', 0)
+                total_items += 1
+                total_quantity += quantity
+
+        # Update the cart label text with the current total items and quantity
+        canvas.itemconfig(cart_label, text=f"Items on cart:  {total_items * total_quantity}")
+        # Schedule the function to run again after 1 seconds
+        window.after(1000, count_items_in_cart)
+    except FileNotFoundError:
+        print("Cart file not found.")
+        # If cart file is not found or empty, schedule the function to run again after 1 seconds
+        window.after(1000, count_items_in_cart)
+
 def cartoon_script(event):
     script_path = "Scripts/category_descriptions/cartoon.py"
     subprocess.run(['python', script_path])
 def nendo_script(event):
     script_path = "Scripts/category_descriptions/nendoroid.py"
+    subprocess.run(['python', script_path])
+def authentic_script():
+    script_path = "Scripts/authentic.py"
     subprocess.run(['python', script_path])
 
 def icon(window):
@@ -94,9 +125,9 @@ canvas.create_text(110.0, 38.0, anchor="nw", text="Arti-san", fill="#FFFFFF", fo
 # Items on Cart
 items_img = PhotoImage(file=relative_to_assets("image_5.png"))
 image_5 = canvas.create_image(990.0, 60.0, image=items_img)
-canvas.create_text(935.0, 47.0, anchor="nw", text="Items on cart:", fill="#FFFFFF", font=("Montserrat SemiBold", 16 * -1))
+cart_label = canvas.create_text(935.0, 47.0, anchor="nw", text="Items on cart:", fill="#FFFFFF", font=("Montserrat SemiBold", 16 * -1))
 # Numbers on cart
-canvas.create_text(1060.0, 47.0, anchor="nw", text="0", fill="#FFFFFF", font=("Montserrat SemiBold", 16 * -1))
+canvas.create_text(1060.0, 47.0, anchor="nw", text=count_items_in_cart(), fill="#FFFFFF", font=("Montserrat SemiBold", 16 * -1))
 cart_img = PhotoImage(file=relative_to_assets("image_6.png"))
 image_6 = canvas.create_image(914.0, 60.0, image=cart_img)
 
@@ -134,7 +165,7 @@ button_1.bind('<Motion>', on_motion_1)
 
 # Original (authentic)
 orig_img = PhotoImage(file=relative_to_assets("button_2.png"))
-button_2 = Button(image=orig_img, borderwidth=0, highlightthickness=0, command=lambda: print("button_2 clicked"), relief="flat")
+button_2 = Button(image=orig_img, borderwidth=0, highlightthickness=0, command=authentic_script, relief="flat")
 button_2.place(x=36.0, y=211.0, width=527.0, height=178.0)
 button_image_hover_2 = PhotoImage(file=relative_to_assets("button_hover_2.png"))
 def button_2_hover(e):
