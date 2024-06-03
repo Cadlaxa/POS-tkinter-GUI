@@ -81,7 +81,6 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
         # Schedule the function to run again after 1 seconds
         window.after(1000, count_items_in_cart)
     except FileNotFoundError:
-        print("Cart file not found.")
         # If cart file is not found or empty, schedule the function to run again after 1 seconds
         window.after(1000, count_items_in_cart)
 

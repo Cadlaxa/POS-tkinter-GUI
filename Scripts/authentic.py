@@ -60,7 +60,6 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
         # Schedule the function to run again after 1 seconds
         window.after(1000, count_items_in_cart)
     except FileNotFoundError:
-        print("Cart file not found.")
         # If cart file is not found or empty, schedule the function to run again after 1 seconds
         window.after(1000, count_items_in_cart)
 
@@ -155,9 +154,9 @@ button_4.bind('<Leave>', button_4_leave)
 # Cart
 image_image_5 = PhotoImage(file=relative_to_assets("image_5.png"))
 image_5 = canvas.create_image(990.0, 60.0,image=image_image_5)
-canvas.create_text(937.0, 47.0, anchor="nw",
+cart_label = canvas.create_text(937.0, 47.0, anchor="nw",
                    text="Items on cart:", fill="#FFFFFF", font=("Montserrat SemiBold", 16 * -1))
-cart_label = canvas.create_text(1059.0, 47.0, anchor="nw",
+canvas.create_text(1059.0, 47.0, anchor="nw",
                    text=count_items_in_cart(), fill="#FFFFFF", font=("Montserrat SemiBold", 16 * -1))
 image_image_6 = PhotoImage(file=relative_to_assets("image_6.png"))
 image_6 = canvas.create_image(914.0, 60.0, image=image_image_6)
