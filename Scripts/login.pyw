@@ -49,13 +49,13 @@ def login():
     messagebox.showerror("Login", "Invalid username or email or password.")
 
 def signup_script():
-        script_path = "Scripts/signup.py"
+        script_path = "Scripts/signup.pyw"
         subprocess.run(['python', script_path])
 def forgot_script():
-        script_path = "Scripts/I_forgot.py"
+        script_path = "Scripts/I_forgot.pyw"
         subprocess.run(['python', script_path])
 def categ_script():
-        script_path = "Scripts/categories.py"
+        script_path = "Scripts/categories.pyw"
         subprocess.run(['python', script_path])
 
 def icon(window):

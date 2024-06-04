@@ -56,7 +56,7 @@ def write_to_yaml(data):
         yaml.dump(data, file)
 
 def checkout_script():
-        script_path = "Scripts/checkout.py"
+        script_path = "Scripts/checkout.pyw"
         subprocess.run(['python', script_path])
 
 def remove_items_on_cart():

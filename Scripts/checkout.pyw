@@ -144,7 +144,8 @@ def confirm_purchase():
         # Clear the YAML file contents
         try:
             with open(CART_FILE, 'w', encoding='utf-8') as file:
-                yaml.dump({}, file)
+                cart_data = {'cart': {'items': []}}
+                yaml.dump(cart_data, file)
         except Exception as e:
             messagebox.showerror("Error", f"Failed to clear cart file: {e}")
     else:
