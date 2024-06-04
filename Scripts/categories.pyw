@@ -87,22 +87,22 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
 
 def cartoon_script(event):
     script_path = "Scripts/category_descriptions/cartoon.pyw"
-    subprocess.run(['python', script_path])
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 def nendo_script(event):
     script_path = "Scripts/category_descriptions/nendoroid.pyw"
-    subprocess.run(['python', script_path])
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 def authentic_script(event):
     script_path = "Scripts/category_descriptions/authentic.pyw"
-    subprocess.run(['python', script_path])
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 def resin_script(event):
     script_path = "Scripts/category_descriptions/resin.pyw"
-    subprocess.run(['python', script_path])
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 def authentic_product():
     script_path = "Scripts/authentic.pyw"
-    subprocess.run(['python', script_path])
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 def nendo_product():
     script_path = "Scripts/nendoroid.pyw"
-    subprocess.run(['python', script_path])
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
 def icon(window):
     img = PhotoImage(file=ICON)
@@ -116,10 +116,10 @@ window.title("Welcome to Arti-san")
 # Checkout and Remove Items keyboard shortcut
 def checkout_script(event):
     script_path = "Scripts/checkout.pyw"
-    subprocess.run(['python', script_path])
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 def remove_script(event):
     script_path = "Scripts/remove_items.pyw"
-    subprocess.run(['python', script_path])
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 window.bind("<Return>", checkout_script)
 window.bind("<BackSpace>", remove_script)
 

@@ -50,13 +50,13 @@ def login():
 
 def signup_script():
         script_path = "Scripts/signup.pyw"
-        subprocess.run(['python', script_path])
+        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 def forgot_script():
         script_path = "Scripts/I_forgot.pyw"
-        subprocess.run(['python', script_path])
+        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 def categ_script():
         script_path = "Scripts/categories.pyw"
-        subprocess.run(['python', script_path])
+        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
 def icon(window):
     img = PhotoImage(file=ICON)

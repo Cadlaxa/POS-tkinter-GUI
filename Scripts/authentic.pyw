@@ -68,7 +68,7 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
 # Products
 def castoria():
     script_path = "Scripts/product_frames/authentic_castoria.pyw"
-    subprocess.run(['python', script_path])
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
 window = Tk()
 window.geometry("1143x619")
@@ -78,10 +78,10 @@ window.title(type)
 # Checkout and Remove Items keyboard shortcut
 def checkout_script(event):
     script_path = "Scripts/checkout.pyw"
-    subprocess.run(['python', script_path])
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 def remove_script(event):
     script_path = "Scripts/remove_items.pyw"
-    subprocess.run(['python', script_path])
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 window.bind("<Return>", checkout_script)
 window.bind("<BackSpace>", remove_script)
 

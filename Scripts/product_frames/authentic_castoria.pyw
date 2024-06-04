@@ -57,7 +57,7 @@ def write_to_yaml(data):
 
 def checkout_script():
         script_path = "Scripts/checkout.pyw"
-        subprocess.run(['python', script_path])
+        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
 def remove_items_on_cart():
     def load_cart_items(tree):
