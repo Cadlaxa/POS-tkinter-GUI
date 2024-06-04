@@ -2,4 +2,4 @@
 import subprocess
 
 file_path = "Scripts/login.pyw"
-subprocess.run(['python', file_path])
+subprocess.Popen(['pythonw', file_path], startupinfo=subprocess.STARTUPINFO())
