@@ -55,6 +55,10 @@ def write_to_yaml(data):
     with open(CART_FILE, 'w', encoding='utf-8') as file:
         yaml.dump(data, file)
 
+def checkout_script():
+        script_path = "Scripts/checkout.py"
+        subprocess.run(['python', script_path])
+
 def remove_items_on_cart():
     def load_cart_items(tree):
         try:
@@ -241,7 +245,7 @@ button_1.bind('<Leave>', button_1_leave)
 
 # Check Out
 button_image_2 = PhotoImage(file=relative_to_assets("button_2.png"))
-button_2 = Button(image=button_image_2, borderwidth=0, highlightthickness=0, command=lambda: print("button_2 clicked"), relief="flat")
+button_2 = Button(image=button_image_2, borderwidth=0, highlightthickness=0, command=checkout_script, relief="flat")
 button_2.place(x=929.583984375, y=35.69354248046875, width=180.01962280273438, height=51.21247863769531)
 button_image_hover_2 = PhotoImage( file=relative_to_assets("button_hover_2.png"))
 def button_2_hover(e):

@@ -75,6 +75,16 @@ window.geometry("1143x619")
 window.configure(bg = "#FFFFFF")
 window.title(type)
 
+# Checkout and Remove Items keyboard shortcut
+def checkout_script(event):
+    script_path = "Scripts/checkout.py"
+    subprocess.run(['python', script_path])
+def remove_script(event):
+    script_path = "Scripts/remove_items.py"
+    subprocess.run(['python', script_path])
+window.bind("<Return>", checkout_script)
+window.bind("<BackSpace>", remove_script)
+
 canvas = Canvas(window, bg = "#FFFFFF", height = 619, width = 1143, bd = 0, highlightthickness = 0, relief = "ridge")
 canvas.place(x = 0, y = 0)
 canvas.create_rectangle(0.0, 0.0, 1143.0, 619.3824462890625, fill="#FFFFFF", outline="")

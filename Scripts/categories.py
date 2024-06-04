@@ -28,6 +28,7 @@ def read_users():
 def relative_to_assets(path: str) -> P:
     return ASSETS_PATH / P(path)
 
+
 class ToolTip:
     def __init__(self, widget):
         self.widget = widget
@@ -111,6 +112,16 @@ window = Tk()
 window.geometry("1143x619")
 window.configure(bg="#FFFFFF")
 window.title("Welcome to Arti-san")
+
+# Checkout and Remove Items keyboard shortcut
+def checkout_script(event):
+    script_path = "Scripts/checkout.py"
+    subprocess.run(['python', script_path])
+def remove_script(event):
+    script_path = "Scripts/remove_items.py"
+    subprocess.run(['python', script_path])
+window.bind("<Return>", checkout_script)
+window.bind("<BackSpace>", remove_script)
 
 canvas = Canvas(window, bg="#FFFFFF", height=619, width=1143, bd=0, highlightthickness=0, relief="ridge")
 canvas.place(x=0, y=0)
