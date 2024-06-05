@@ -59,63 +59,10 @@ def checkout_script():
         script_path = "Scripts/checkout.pyw"
         subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
-def remove_items_on_cart():
-    def load_cart_items(tree):
-        try:
-            with open(CART_FILE, 'r', encoding='utf-8') as file:
-                cart_data = yaml.load(file)
-            # Clear existing items in treeview
-            tree.delete(*tree.get_children())
-            # Populate treeview with items from cart
-            if 'cart' in cart_data and 'items' in cart_data['cart']:
-                for item in cart_data['cart']['items']:
-                    name = item.get('Name', '')
-                    price = item.get('Item Price', '')
-                    price1 = item.get('Total Price (with or w/o box)', '')
-                    packaging = item.get('Packaging', '')
-                    quantity = item.get('quantity', '')
-                    tree.insert('', 'end', values=(name, price, price1, packaging, quantity))
-        except FileNotFoundError:
-            print("Cart file not found.")
+def remove_item_script():
+        script_path = "Scripts/remove_items.pyw"
+        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
-    def remove_selected_item(tree):
-        selected_item = tree.selection()
-        if selected_item:
-            # Remove selected item from treeview
-            tree.delete(selected_item)
-            update_cart_file(tree)
-
-    def update_cart_file(tree):
-        cart_data = {'cart': {'items': []}}
-        for item in tree.get_children():
-            name, price, price1, packaging, quantity = tree.item(item, 'values')
-            cart_data['cart']['items'].append({'Name': name, 'Item Price': price, 'Total Price (with or w/o box)': price1, 'Packaging': packaging,'quantity': quantity})
-        with open(CART_FILE, 'w', encoding='utf-8') as file:
-            yaml.dump(cart_data, file)
-
-    def remove_item_window():
-        remove_window = tk.Toplevel()
-        remove_window.title("Remove Item/s")
-        # Add treeview to display selected item
-        remove_tree = ttk.Treeview(remove_window, columns=('Name', 'Price', 'Total Price', 'Packaging', 'Quantity'), show='headings')
-        remove_tree.heading('Name', text='Name')
-        remove_tree.heading('Price', text='Price')
-        remove_tree.heading('Total Price', text='Total Price')
-        remove_tree.heading('Packaging', text='Packaging Type')
-        remove_tree.heading('Quantity', text='Quantity')
-        remove_tree.column('Name', width=300, anchor='w')
-        remove_tree.column('Price', width=80, anchor='c')
-        remove_tree.column('Total Price', width=80, anchor='c')
-        remove_tree.column('Packaging', width=120, anchor='c')
-        remove_tree.column('Quantity', width=60, anchor='c')
-        remove_tree.pack()
-        # Load items from cart into the treeview
-        load_cart_items(remove_tree)
-        # Button to remove selected item
-        remove_button = Button(remove_window, text="Remove Item/s", bg="#31F5C2", font=("Montserrat ExtraBold", 10), command=lambda: remove_selected_item(remove_tree))
-        remove_button.pack()
-        icon(remove_window)
-    remove_item_window()
 
 # Command function for the "Buy brand new" button
 def buy_product(is_brand_new):
@@ -229,7 +176,7 @@ image_7 = canvas.create_image(537.0, 474.0, image=image_image_7)
 # Remove Item on Cart
 button_image_1 = PhotoImage(file=relative_to_assets("button_1.png"))
 button_1 = Button(image=button_image_1, borderwidth=0, highlightthickness=0,
-    command=remove_items_on_cart, relief="flat")
+    command=remove_item_script, relief="flat")
 button_1.place(x=694.0, y=35.69354248046875, width=220.06515502929688, height=51.21247863769531)
 button_image_hover_1 = PhotoImage(file=relative_to_assets("button_hover_1.png"))
 def button_1_hover(e):
