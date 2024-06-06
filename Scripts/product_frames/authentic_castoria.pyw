@@ -212,7 +212,7 @@ def buy_product(is_brand_new):
 
     # Define IntVar to hold the selected packaging type
     packaging_var = tk.IntVar()
-    packaging_var.set(0)  # Set "No box" as default
+    packaging_var.set(1)  # Set "box" as default
 
     # Radio buttons for packaging type
     ttk.Radiobutton(radio_frame, text="No box (-₱200 on base price)", variable=packaging_var, value=0, command=on_packaging_change).grid(row=0, column=0, padx=10)
