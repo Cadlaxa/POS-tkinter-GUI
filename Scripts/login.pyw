@@ -168,6 +168,24 @@ canvas.create_text(773.0, 33.0, anchor="nw",
     text="Arti-san\n", fill="#FFFFFF", font=("Montserrat ExtraBold", 15 * -1)
 )
 
+see_pass = PhotoImage(file=relative_to_assets("see_button.png"))
+unsee_pass = PhotoImage(file=relative_to_assets("unsee_button.png"))
+
+# State flag to track visibility ng password entry
+is_visible = False
+def toggle_password():
+    global is_visible
+    if is_visible:
+        entry_2.config(show="*")
+        button_4.config(image=unsee_pass)
+        is_visible = False
+    else:
+        entry_2.config(show="")
+        button_4.config(image=see_pass)
+        is_visible = True
+button_4 = Button(image=unsee_pass, borderwidth=0, highlightthickness=0, command=toggle_password, relief="flat")
+button_4.place(x=419.0, y=389.0, width=37.0, height=37.0)
+
 icon(window)
 window.resizable(False, False)
 window.mainloop()

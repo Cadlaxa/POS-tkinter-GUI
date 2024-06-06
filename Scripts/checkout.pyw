@@ -44,8 +44,6 @@ def load_cart_items(tree):
         print(f"Error loading cart items: {e}")
         return
 
-
-
 # Add treeview to display cart items
 checkout_tree = ttk.Treeview(window, columns=('Name', 'Price', 'Packaging', 'Total Price', 'Quantity'), show='headings')
 checkout_tree.heading('Name', text='Name')
@@ -77,6 +75,7 @@ def update_total_price(tree):
         price_str = price_str.replace('₱', '')  # Remove peso sign
         total_price += float(price_str)
     total_price_label.config(text=f"Total Price: ₱{total_price:.2f}")
+
 # Load cart items into treeview
 load_cart_items(checkout_tree)
 update_total_price(checkout_tree)  # Update total price label
@@ -112,44 +111,42 @@ def add_amount():
             current_amount = float(amount_paid_label.cget("text").replace("Amount Paid: ₱", "").replace(",", ""))
             updated_amount = current_amount + amount_to_add
             amount_paid_label.config(text=f"Amount Paid: ₱{updated_amount:.2f}")
+            update_payment_status(updated_amount, float(total_price_label.cget("text").replace("Total Price: ₱", "").replace(",", "")))
         else:
             raise ValueError("Negative amount not allowed.")
     except ValueError:
         messagebox.showerror("Invalid Input", "Please enter a valid amount to add.")
 
+def reset_amount():
+    amount_paid_label.config(text="Amount Paid: ₱0.00")
+    update_payment_status(0, float(total_price_label.cget("text").replace("Total Price: ₱", "").replace(",", "")))
+
 def confirm_purchase():
     try:
-        payment_amount = float(payment_entry.get())
+        payment_amount = float(amount_paid_label.cget("text").replace("Amount Paid: ₱", "").replace(",", ""))
         total_price_str = total_price_label.cget("text").replace("Total Price: ₱", "")
         total_price = float(total_price_str.replace(",", ""))  # Remove comma if present
-        if payment_amount >= 0:
-            amount_paid_label.config(text=f"Amount Paid: ₱{payment_amount:.2f}")
-            update_payment_status(payment_amount, total_price)
+        if payment_amount >= total_price:
+            save_receipt = messagebox.askyesno("Save Receipt", "Purchase successful. Do you want to save the receipt?")
+            if save_receipt:
+                print_receipt(checkout_tree)
+            else:
+                messagebox.showinfo("Purchase Confirmed", "Purchase confirmed. Receipt not saved.")
+            
+            # Clear the YAML file contents
+            try:
+                with open(CART_FILE, 'w', encoding='utf-8') as file:
+                    cart_data = {'cart': {'items': []}}
+                    yaml.dump(cart_data, file)
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to clear cart file: {e}")
+            
+            # Close the window
+            window.destroy()
         else:
-            raise ValueError("Negative amount not allowed.")
+            messagebox.showerror("Insufficient Payment", "Please complete the payment before confirming the purchase.")
     except ValueError:
         messagebox.showerror("Invalid Input", "Please enter a valid payment amount.")
-        
-    current_amount = float(amount_paid_label.cget("text").replace("Amount Paid: ₱", "").replace(",", ""))
-    if current_amount >= total_price:
-        save_receipt = messagebox.askyesno("Save Receipt", "Purchase successful. Do you want to save the receipt?")
-        if save_receipt:
-            print_receipt(checkout_tree)
-        else:
-            messagebox.showinfo("Purchase Confirmed", "Purchase confirmed. Receipt not saved.")
-        
-        # Close the window
-        window.destroy()
-        
-        # Clear the YAML file contents
-        try:
-            with open(CART_FILE, 'w', encoding='utf-8') as file:
-                cart_data = {'cart': {'items': []}}
-                yaml.dump(cart_data, file)
-        except Exception as e:
-            messagebox.showerror("Error", f"Failed to clear cart file: {e}")
-    else:
-        messagebox.showerror("Insufficient Payment", "Please complete the payment before confirming the purchase.")
 
 # Create a frame for buttons and place them at the bottom
 button_frame = ttk.Frame(window)
@@ -159,15 +156,18 @@ button_frame.pack(side=tk.BOTTOM, pady=20)
 add_amount_button = Button(button_frame, text="Add Amount", command=add_amount, bg="#FFD166", font=("Montserrat ExtraBold", 10))
 add_amount_button.pack(side=tk.LEFT, padx=10)
 
+# Button to reset amount
+reset_amount_button = Button(button_frame, text="Reset Amount", command=reset_amount, bg="#EF476F", font=("Montserrat ExtraBold", 10))
+reset_amount_button.pack(side=tk.LEFT, padx=10)
+
 # Button to confirm purchase
 confirm_purchase_button = Button(button_frame, text="Confirm Purchase", command=confirm_purchase, bg="#31F5C2", font=("Montserrat ExtraBold", 10))
 confirm_purchase_button.pack(side=tk.RIGHT, padx=10)
 
 # Button to save receipt
-receipt_button = Button(button_frame, text="Save Receipt", command=lambda: print_receipt(checkout_tree), bg="#FFD166", font=("Montserrat ExtraBold", 10))
+receipt_button = Button(button_frame, text="Save Receipt", command=lambda: print_receipt(checkout_tree), bg="#46A9FF", font=("Montserrat ExtraBold", 10))
 receipt_button.pack(side=tk.LEFT, padx=10)
 receipt_button.config(state=tk.DISABLED)  # Disable save receipt button initially
 
 icon(window)
 window.mainloop()
-

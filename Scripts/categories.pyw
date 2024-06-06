@@ -103,6 +103,12 @@ def authentic_product():
 def nendo_product():
     script_path = "Scripts/nendoroid.pyw"
     subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+def resin_product():
+    script_path = "Scripts/resin.pyw"
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+def cartoon_product():
+    script_path = "Scripts/cartoon.pyw"
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
 def icon(window):
     img = PhotoImage(file=ICON)
@@ -159,7 +165,7 @@ canvas.create_text(470.0, 37.0, anchor="nw", text="Hello There!", fill="#FFFFFF"
 
 # Class A (Resin)
 resin_img = PhotoImage(file=relative_to_assets("button_1.png"))
-button_1 = Button(image=resin_img, borderwidth=0, highlightthickness=0, command=lambda: print("button_1 clicked"), relief="flat")
+button_1 = Button(image=resin_img, borderwidth=0, highlightthickness=0, command=resin_product, relief="flat")
 button_1.place(x=577.0, y=211.0, width=531.0, height=178.0)
 button_image_hover_1 = PhotoImage(file=relative_to_assets("button_hover_1.png"))
 def button_1_hover(e):
@@ -211,7 +217,7 @@ button_2.bind('<Motion>', on_motion_2)
 
 # Cartoon
 cartoon_img = PhotoImage(file=relative_to_assets("button_3.png"))
-button_3 = Button(image=cartoon_img, borderwidth=0, highlightthickness=0, command=lambda: print("button_3 clicked"), relief="flat")
+button_3 = Button(image=cartoon_img, borderwidth=0, highlightthickness=0, command=cartoon_product, relief="flat")
 button_3.place(x=577.0, y=401.0, width=531.0, height=178.0)
 button_image_hover_3 = PhotoImage(file=relative_to_assets("button_hover_3.png"))
 def button_3_hover(e):

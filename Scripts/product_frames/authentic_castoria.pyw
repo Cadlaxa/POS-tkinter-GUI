@@ -24,8 +24,8 @@ yaml = YAML()
 Product = "Fate Grand Order: Caster/Altria Caster (3rd Ascension)"
 
 # Remove the commas and convert to an integer kasi mag e-error sya
-brand_new = 10345
-pre_owned = 9310
+brand_new = 24999
+pre_owned = 15599
 
 no_box = -200
 box_price = 200
@@ -64,7 +64,64 @@ def remove_item_script():
         subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
 
-# Command function for the "Buy brand new" button
+# Command function for the "Buy brand new/Pre-owned" button
+def load_cart_items(tree):
+    try:
+        with open(CART_FILE, 'r', encoding='utf-8') as file:
+            cart_data = yaml.load(file)
+
+        # Clear existing items in treeview
+        tree.delete(*tree.get_children())
+
+        # Populate treeview with items from cart
+        if 'cart' in cart_data and 'items' in cart_data['cart']:
+            for idx, item in enumerate(cart_data['cart']['items'], start=1):
+                name = item.get('Name', '')
+                packaging = item.get('Packaging', '')
+                quantity = item.get('quantity', 1)
+                tree.insert('', 'end', values=(name, packaging, quantity))
+    except FileNotFoundError:
+        print("Cart file not found.")
+        return
+
+def remove_last_item(tree):
+    try:
+        with open(CART_FILE, 'r', encoding='utf-8') as file:
+            cart_data = yaml.load(file)
+
+        if 'cart' in cart_data and 'items' in cart_data['cart'] and cart_data['cart']['items']:
+            # Remove the last item from the cart
+            cart_data['cart']['items'].pop()
+
+            # Update the YAML file
+            write_to_yaml(cart_data)
+
+            # Reload the treeview
+            load_cart_items(tree)
+    except FileNotFoundError:
+        print("Cart file not found.")
+        return
+
+def update_last_quantity(change, tree):
+    try:
+        with open(CART_FILE, 'r', encoding='utf-8') as file:
+            cart_data = yaml.load(file)
+
+        if 'cart' in cart_data and 'items' in cart_data['cart'] and cart_data['cart']['items']:
+            last_item = cart_data['cart']['items'][-1]
+            last_item['quantity'] += change
+            if last_item['quantity'] < 1:
+                last_item['quantity'] = 1  # Prevent quantity from going below 1
+
+            # Update the YAML file
+            write_to_yaml(cart_data)
+
+            # Reload the treeview
+            load_cart_items(tree)
+    except FileNotFoundError:
+        print("Cart file not found.")
+        return
+
 def buy_product(is_brand_new):
     packaging_options = {
         0: "No box",
@@ -78,68 +135,99 @@ def buy_product(is_brand_new):
             base_price = pre_owned
 
         if packaging_type == 0:  # No box
-            total_price = base_price + no_box
+            packaging_price = no_box
         elif packaging_type == 1:  # Box
-            total_price = base_price + box_price
+            packaging_price = box_price
         elif packaging_type == 2:  # Clampshell
-            total_price = base_price + clampshell_price
-        data = {
-            'cart': {
-                'items': [
-                    {'Name': Product, 'Item Price': f'₱{base_price}', 'Packaging': packaging_options[packaging_type], 'Total Price (with or w/o box)': f'₱{total_price * quantity}', 'quantity': quantity}
-                ]
-            }
-        }
-        write_to_yaml(data)
-        messagebox.showinfo("Item Added", f"{quantity}x {'Brand new' if is_brand_new else 'Pre-owned'} Figure added to cart")
+            packaging_price = clampshell_price
+
+        total_price = base_price + packaging_price
+        cart_data = {'cart': {'items': []}}
+        if CART_FILE.exists():
+            with open(CART_FILE, 'r', encoding='utf-8') as file:
+                cart_data = yaml.load(file)
+
+        cart_data['cart']['items'].append({
+            'Name': Product,
+            'Item Price': f'₱{base_price}',
+            'Packaging': packaging_options[packaging_type],
+            'Total Price (with or w/o box)': f'₱{total_price}',
+            'quantity': quantity
+        })
+        
+        write_to_yaml(cart_data)
+        load_cart_items(tree)
 
     def update_quantity(change):
         nonlocal quantity
         quantity += change
+        if quantity < 1:
+            quantity = 1
         quantity_entry.delete(0, tk.END)
         quantity_entry.insert(0, str(quantity))
+        if change > 0:
+            add_to_cart(quantity, packaging_var.get())
+        else:
+            remove_last_item(tree)
 
-    def confirm_quantity():
-        quantity = int(quantity_entry.get())
-        packaging_type = packaging_var.get()
-        add_to_cart(quantity, packaging_type)
-        quantity_window.destroy()
+    def on_packaging_change():
+        update_quantity(1)
 
-    quantity = 1
+    def on_tree_select(event):
+        selected_item = tree.selection()
+        if selected_item:
+            item = tree.item(selected_item)
+            quantity_entry.delete(0, tk.END)
+            quantity_entry.insert(0, item['values'][2])
+
+    quantity = 0
     quantity_window = tk.Toplevel()
     quantity_window.title("Add Quantity")
 
     center_frame = ttk.Frame(quantity_window)
-    center_frame.grid(row=0, column=0, padx=10, pady=10)
+    center_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
     instruction_label = ttk.Label(center_frame, text="Enter quantity:", font=("Montserrat SemiBold", 10))
     instruction_label.grid(row=0, column=0, padx=5)
 
-    quantity_entry = Entry(center_frame, width=15, font=("Montserrat SemiBold", 10))
+    quantity_entry = tk.Entry(center_frame, width=15, font=("Montserrat SemiBold", 10))
     quantity_entry.insert(0, str(quantity))
     quantity_entry.grid(row=0, column=1, padx=5)
 
-    plus_button = Button(center_frame, text="+", command=lambda: update_quantity(1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
+    plus_button = tk.Button(center_frame, text="+", command=lambda: update_quantity(1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
     plus_button.grid(row=0, column=3, padx=10, sticky="we")
 
-    minus_button = Button(center_frame, text="-", command=lambda: update_quantity(-1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
+    minus_button = tk.Button(center_frame, text="-", command=lambda: update_quantity(-1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
     minus_button.grid(row=0, column=2, sticky="we")
 
-    confirm_button = Button(center_frame, text="Confirm", command=confirm_quantity, bg="#FFD166", font=("Montserrat ExtraBold", 10))
-    confirm_button.grid(row=1, column=0, columnspan=4, pady=(20,5), sticky="we")
+    remove_button = tk.Button(center_frame, text="Remove Last Item", command=lambda: remove_last_item(tree), bg="#FF6347", font=("Montserrat ExtraBold", 10))
+    remove_button.grid(row=1, column=0, columnspan=4, pady=(10,5), sticky="we")
+
+    confirm_button = tk.Button(center_frame, text="Confirm", command=quantity_window.destroy, bg="#FFD166", font=("Montserrat ExtraBold", 10))
+    confirm_button.grid(row=2, column=0, columnspan=4, pady=(10,5), sticky="we")
 
     # Create a frame for the radio buttons
     radio_frame = ttk.Frame(center_frame)
-    radio_frame.grid(row=2, column=0, columnspan=4, pady=(5,0))
+    radio_frame.grid(row=3, column=0, columnspan=4, pady=(5,0))
 
     # Define IntVar to hold the selected packaging type
     packaging_var = tk.IntVar()
-    packaging_var.set(0) 
+    packaging_var.set(0)  # Set "No box" as default
 
     # Radio buttons for packaging type
-    ttk.Radiobutton(radio_frame, text="No box (-₱200 on base price)", variable=packaging_var, value=0).grid(row=0, column=0, padx=10)
-    ttk.Radiobutton(radio_frame, text="Box (+₱200)", variable=packaging_var, value=1).grid(row=0, column=1, padx=10)
-    ttk.Radiobutton(radio_frame, text="Clampshell (+₱300)", variable=packaging_var, value=2).grid(row=0, column=2, padx=10)
+    ttk.Radiobutton(radio_frame, text="No box (-₱200 on base price)", variable=packaging_var, value=0, command=on_packaging_change).grid(row=0, column=0, padx=10)
+    ttk.Radiobutton(radio_frame, text="Box (+₱200)", variable=packaging_var, value=1, command=on_packaging_change).grid(row=0, column=1, padx=10)
+    ttk.Radiobutton(radio_frame, text="Clampshell (+₱300)", variable=packaging_var, value=2, command=on_packaging_change).grid(row=0, column=2, padx=10)
+
+    # Create Treeview to display items
+    tree = ttk.Treeview(quantity_window, columns=('Name', 'Packaging', 'Quantity'), show='headings')
+    tree.heading('Name', text='Item Name')
+    tree.heading('Packaging', text='Package Type')
+    tree.heading('Quantity', text='Item Instance')
+    tree.grid(row=4, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
+    tree.bind('<<TreeviewSelect>>', on_tree_select)
+
+    load_cart_items(tree)
     icon(quantity_window)
 
 window = Tk()
