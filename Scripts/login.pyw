@@ -21,6 +21,8 @@ USERS_FILE = ACCOUNTS_DIR / 'users.yaml'
 ICON = P('./Assets/logour.png')
 yaml = YAML()
 
+# Global variable to store logged-in user
+logged_in_user = None
 
 # Function to read user data from the YAML file
 def read_users():
@@ -33,19 +35,32 @@ def relative_to_assets(path: str) -> P:
     return ASSETS_PATH / P(path)
 
 def login():
+    global logged_in_user
     username_or_email = entry_1.get()  # Get the entered username or email
     password = entry_2.get()
     users = read_users()
 
     # Check if the entered username or email exists in users and if the password matches
-    for user_data in users.values():
+    for user_name, user_data in users.items():
         if ('username' in user_data and user_data['username'] == username_or_email and user_data['password'] == password) or \
            ('email' in user_data and user_data['email'] == username_or_email and user_data['password'] == password):
             messagebox.showinfo("Login", "Login successful!")
+            # Remove the previously logged-in user if exists
+            if logged_in_user in users:
+                users[logged_in_user]['logged'] = False  # Set previous user's 'logged' key to False
+            # Set the logged-in user
+            logged_in_user = user_name
+            user_data['logged'] = True  # Add 'logged' key to indicate current user is logged in
+            # Set 'logged' to False for other users
+            for other_user_name, other_user_data in users.items():
+                if other_user_name != logged_in_user:
+                    other_user_data['logged'] = False
+            # Update the YAML file with the new user data
+            with open(USERS_FILE, "w") as file:
+                yaml.dump(users, file)
             window.destroy()
             categ_script()
             return
-
     messagebox.showerror("Login", "Invalid username or email or password.")
 
 def signup_script():

@@ -47,18 +47,17 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
         with open(CART_FILE, 'r', encoding='utf-8') as file:
             cart_data = yaml.load(file)
 
-        # Initialize counters
-        total_items = 0
+        # Initialize the total quantity counter
         total_quantity = 0
-        # Loop through items in the cart
+        
+        # Loop through items in the cart and count the total quantity
         if 'cart' in cart_data and 'items' in cart_data['cart']:
             for item in cart_data['cart']['items']:
-                quantity = item.get('quantity', 0)
-                total_items += 1
-                total_quantity += quantity
+                quantity = item.get('Quantity', 0)  # Assuming 'quantity' is the key
+                total_quantity += int(quantity)
 
         # Update the cart label text with the current total items and quantity
-        canvas.itemconfig(cart_label, text=f"Items on cart:  {total_items * total_quantity}")
+        canvas.itemconfig(cart_label, text=f"Items on cart:  {total_quantity}")
         # Schedule the function to run again after 1 seconds
         window.after(1000, count_items_in_cart)
     except FileNotFoundError:
@@ -68,6 +67,9 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
 # Products
 def castoria():
     script_path = "Scripts/product_frames/authentic_castoria.pyw"
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+def ahri():
+    script_path = "Scripts/product_frames/authentic_ahri.pyw"
     subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
 window = Tk()
@@ -118,7 +120,7 @@ button_1.bind('<Leave>', button_1_leave)
 
 # Product 2 (Ahri)
 ahri_img = PhotoImage(file=relative_to_assets("button_2.png"))
-button_2 = Button(image=ahri_img, borderwidth=0, highlightthickness=0, command=lambda: print("button_2 clicked"), relief="flat")
+button_2 = Button(image=ahri_img, borderwidth=0, highlightthickness=0, command=ahri, relief="flat")
 button_2.place(x=314.0, y=220.0, width=245.59054565429688, height=352.1675720214844)
 button_hover_2 = load_and_resize_image("Assets/authentic_frame/button_2.png", scale_factor)
 def button_2_hover(e):

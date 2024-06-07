@@ -30,50 +30,63 @@ def load_cart_items(tree):
         if 'cart' in cart_data and 'items' in cart_data['cart']:
             for item in cart_data['cart']['items']:
                 name = item.get('Name', '')
+                product_type = item.get('Product Type', '')
                 price = item.get('Item Price', '')
                 price1 = item.get('Total Price (with or w/o box)', '')
                 packaging = item.get('Packaging', '')
-                quantity = item.get('quantity', '')
-                tree.insert('', 'end', values=(name, price, price1, packaging, quantity))
+                instance = item.get('Item Instance', '')
+                quantity = item.get('Quantity', '')
+                tree.insert('', 'end', values=(name, product_type, packaging, price, price1, instance ,quantity))
     except FileNotFoundError:
         print("Cart file not found.")
 
 def remove_selected_item(tree):
-    selected_item = tree.selection()
-    if selected_item:
-        # Remove selected item from treeview
-        tree.delete(selected_item)
+    selected_items = tree.selection()
+    if selected_items:
+        for item in selected_items:
+            tree.delete(item)
         update_cart_file(tree)
 
 def update_cart_file(tree):
     cart_data = {'cart': {'items': []}}
     for item in tree.get_children():
-        name, price, price1, packaging, quantity = tree.item(item, 'values')
-        cart_data['cart']['items'].append({'Name': name, 'Item Price': price, 'Total Price (with or w/o box)': price1, 'Packaging': packaging,'quantity': quantity})
+        name, product_type, packaging, price, price1, instance, quantity = tree.item(item, 'values')
+        cart_data['cart']['items'].append({
+            'Name': name,
+            'Product Type': product_type,
+            'Item Price': price,
+            'Packaging': packaging,
+            'Total Price (with or w/o box)': price1,
+            'Item Instance': instance,
+            'Quantity': quantity
+        })
     with open(CART_FILE, 'w', encoding='utf-8') as file:
         yaml.dump(cart_data, file)
 
 def remove_item_window():
     # Add treeview to display selected item
-    remove_tree = ttk.Treeview(window, columns=('Name', 'Price', 'Total Price', 'Packaging', 'Quantity'), show='headings')
+    remove_tree = ttk.Treeview(window, columns=('Name', 'Product Type', 'Packaging', 'Price', 'Total Price', 'Item Instance', 'Quantity'), show='headings')
     remove_tree.heading('Name', text='Name')
+    remove_tree.heading('Product Type', text='Product Type')
+    remove_tree.heading('Packaging', text='Packaging Type')
     remove_tree.heading('Price', text='Price')
     remove_tree.heading('Total Price', text='Total Price')
-    remove_tree.heading('Packaging', text='Packaging Type')
+    remove_tree.heading('Item Instance', text='Item Instance')
     remove_tree.heading('Quantity', text='Quantity')
     remove_tree.column('Name', width=300, anchor='w')
+    remove_tree.column('Product Type', width=100, anchor='w')
     remove_tree.column('Price', width=80, anchor='c')
     remove_tree.column('Total Price', width=80, anchor='c')
     remove_tree.column('Packaging', width=120, anchor='c')
-    remove_tree.column('Quantity', width=60, anchor='c')
-    remove_tree.pack()
+    remove_tree.column('Item Instance', width=80, anchor='c')
+    remove_tree.column('Quantity', width=80, anchor='c')
+    remove_tree.pack(fill='both')
     # Load items from cart into the treeview
     load_cart_items(remove_tree)
     # Button to remove selected item
     remove_button = Button(window, text="Remove Item/s", bg="#31F5C2", font=("Montserrat ExtraBold", 10), command=lambda: remove_selected_item(remove_tree))
-    remove_button.pack()
+    remove_button.pack(fill='x')
 remove_item_window()
 
 icon(window)
 window.mainloop()
-

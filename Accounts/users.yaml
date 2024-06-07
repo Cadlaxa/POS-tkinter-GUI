@@ -7,6 +7,7 @@ pao:
   contact_number: '1234567890'
   address: Blk 41 lot 70 Phase 6 Golden City Subd., Brgy, Salawag, Dasmarinas, Cavite
   house_number: it's a house duh
+  logged: true
 admin:
   username: admin
   password: admin
@@ -16,3 +17,4 @@ admin:
   contact_number: '1234567890'
   address: address
   house_number: house
+  logged: false

@@ -67,18 +67,17 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
         with open(CART_FILE, 'r', encoding='utf-8') as file:
             cart_data = yaml.load(file)
 
-        # Initialize counters
-        total_items = 0
+        # Initialize the total quantity counter
         total_quantity = 0
-        # Loop through items in the cart
+        
+        # Loop through items in the cart and count the total quantity
         if 'cart' in cart_data and 'items' in cart_data['cart']:
             for item in cart_data['cart']['items']:
-                quantity = item.get('quantity', 0)
-                total_items += 1
-                total_quantity += quantity
+                quantity = item.get('Quantity', 0)  # Assuming 'quantity' is the key
+                total_quantity += int(quantity)
 
         # Update the cart label text with the current total items and quantity
-        canvas.itemconfig(cart_label, text=f"Items on cart:  {total_items * total_quantity}")
+        canvas.itemconfig(cart_label, text=f"Items on cart:  {total_quantity}")
         # Schedule the function to run again after 1 seconds
         window.after(1000, count_items_in_cart)
     except FileNotFoundError:

@@ -77,9 +77,11 @@ def load_cart_items(tree):
         if 'cart' in cart_data and 'items' in cart_data['cart']:
             for idx, item in enumerate(cart_data['cart']['items'], start=1):
                 name = item.get('Name', '')
+                product_type = item.get('Product Type', 'Unknown')
                 packaging = item.get('Packaging', '')
-                quantity = item.get('quantity', 1)
-                tree.insert('', 'end', values=(name, packaging, quantity))
+                quantity = item.get('Item Instance', 1)
+                quantity1 = item.get('Quantity', 1)
+                tree.insert('', 'end', values=(name, product_type, packaging, quantity, quantity1))
     except FileNotFoundError:
         print("Cart file not found.")
         return
@@ -109,10 +111,11 @@ def update_last_quantity(change, tree):
 
         if 'cart' in cart_data and 'items' in cart_data['cart'] and cart_data['cart']['items']:
             last_item = cart_data['cart']['items'][-1]
-            last_item['quantity'] += change
-            if last_item['quantity'] < 1:
-                last_item['quantity'] = 1  # Prevent quantity from going below 1
-
+            last_item['Item Instance'] += change
+            if last_item['Item Instance'] < 1:
+                last_item['Item Instance'] = 1  # Prevent quantity from going below 1
+            if last_item['Quantity'] < 1:
+                last_item['Quantity'] = 1
             # Update the YAML file
             write_to_yaml(cart_data)
 
@@ -125,14 +128,17 @@ def update_last_quantity(change, tree):
 def buy_product(is_brand_new):
     packaging_options = {
         0: "No box",
-        1: "Box",
+        1: "Boxed",
         2: "Clampshell"
     }
     def add_to_cart(quantity, packaging_type):
+        product_type = 'Brand New' if is_brand_new else 'Pre-owned'
         if is_brand_new:
             base_price = brand_new
+            product_type = "Brand New"
         else:
             base_price = pre_owned
+            product_type = "Pre-Owned"
 
         if packaging_type == 0:  # No box
             packaging_price = no_box
@@ -141,20 +147,47 @@ def buy_product(is_brand_new):
         elif packaging_type == 2:  # Clampshell
             packaging_price = clampshell_price
 
-        total_price = base_price + packaging_price
         cart_data = {'cart': {'items': []}}
         if CART_FILE.exists():
             with open(CART_FILE, 'r', encoding='utf-8') as file:
                 cart_data = yaml.load(file)
 
-        cart_data['cart']['items'].append({
-            'Name': Product,
-            'Item Price': f'₱{base_price}',
-            'Packaging': packaging_options[packaging_type],
-            'Total Price (with or w/o box)': f'₱{total_price}',
-            'quantity': quantity
-        })
-        
+        # Check if the item already exists in the cart
+        item_exists = False
+        for item in cart_data['cart']['items']:
+            if item['Name'] == Product and item['Product Type'] == product_type and item['Packaging'] == packaging_options[packaging_type]:
+                # Item already exists, update its quantity
+                item['Quantity'] += 1
+                item_exists = True
+                break
+
+        if not item_exists:
+            # Item doesn't exist, initialize quantity_add to 1
+            quantity_add = 1
+            # Check if the item already exists in the cart and update quantity_add accordingly
+            for item in cart_data['cart']['items']:
+                if item['Name'] == Product and item['Product Type'] == product_type and item['Packaging'] == packaging_options[packaging_type]:
+                    quantity_add = item['Quantity'] + 1
+                    break
+            total_price = (base_price + packaging_price) * quantity_add
+            
+            # Append the item to the cart with the updated quantity_add
+            cart_data['cart']['items'].append({
+                'Name': Product,
+                'Product Type': product_type,
+                'Item Price': f'₱{base_price}',
+                'Packaging': packaging_options[packaging_type],
+                'Total Price (with or w/o box)': f'₱{total_price}',
+                'Item Instance': 1,
+                'Quantity': quantity_add
+            })
+        else:
+            # Item exists, update its quantity and total price
+            for item in cart_data['cart']['items']:
+                if item['Name'] == Product and item['Product Type'] == product_type and item['Packaging'] == packaging_options[packaging_type]:
+                    item['Total Price (with or w/o box)'] = f'₱{(base_price + packaging_price) * item["Quantity"]}'
+                    break
+                
         write_to_yaml(cart_data)
         load_cart_items(tree)
 
@@ -162,7 +195,7 @@ def buy_product(is_brand_new):
         nonlocal quantity
         quantity += change
         if quantity < 1:
-            quantity = 1
+            quantity = 0
         quantity_entry.delete(0, tk.END)
         quantity_entry.insert(0, str(quantity))
         if change > 0:
@@ -172,6 +205,11 @@ def buy_product(is_brand_new):
 
     def on_packaging_change():
         update_quantity(1)
+    
+    def confirm_and_notify():
+        message = f"Added {quantity} item(s) of {Product} with {packaging_options[packaging_var.get()]} packaging to the cart."
+        messagebox.showinfo("Item Added", message)
+        quantity_window.destroy()
 
     def on_tree_select(event):
         selected_item = tree.selection()
@@ -183,28 +221,30 @@ def buy_product(is_brand_new):
     quantity = 0
     quantity_window = tk.Toplevel()
     quantity_window.title("Add Quantity")
+    quantity_window.grid_columnconfigure(0, weight=1)
 
     center_frame = ttk.Frame(quantity_window)
     center_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+    center_frame.grid_columnconfigure(0, weight=1)
 
     instruction_label = ttk.Label(center_frame, text="Enter quantity:", font=("Montserrat SemiBold", 10))
-    instruction_label.grid(row=0, column=0, padx=5)
+    instruction_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
     quantity_entry = tk.Entry(center_frame, width=15, font=("Montserrat SemiBold", 10))
     quantity_entry.insert(0, str(quantity))
-    quantity_entry.grid(row=0, column=1, padx=5)
+    quantity_entry.grid(row=0, column=1, padx=5, pady=5, sticky="we")
 
-    plus_button = tk.Button(center_frame, text="+", command=lambda: update_quantity(1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
-    plus_button.grid(row=0, column=3, padx=10, sticky="we")
+    plus_button = tk.Button(center_frame, text="  +  ", command=lambda: update_quantity(1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
+    plus_button.grid(row=0, column=3, padx=5, pady=5, sticky="we")
 
-    minus_button = tk.Button(center_frame, text="-", command=lambda: update_quantity(-1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
-    minus_button.grid(row=0, column=2, sticky="we")
+    minus_button = tk.Button(center_frame, text="  -  ", command=lambda: update_quantity(-1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
+    minus_button.grid(row=0, column=2, padx=5, pady=5, sticky="we")
 
-    remove_button = tk.Button(center_frame, text="Remove Last Item", command=lambda: remove_last_item(tree), bg="#FF6347", font=("Montserrat ExtraBold", 10))
-    remove_button.grid(row=1, column=0, columnspan=4, pady=(10,5), sticky="we")
+    remove_button = tk.Button(center_frame, text="Remove Last Item", command=lambda: update_quantity(-1), bg="#FF6347", font=("Montserrat ExtraBold", 10))
+    remove_button.grid(row=1, column=0, columnspan=4, pady=(10, 5), padx=5, sticky="we")
 
-    confirm_button = tk.Button(center_frame, text="Confirm", command=quantity_window.destroy, bg="#FFD166", font=("Montserrat ExtraBold", 10))
-    confirm_button.grid(row=2, column=0, columnspan=4, pady=(10,5), sticky="we")
+    confirm_button = tk.Button(center_frame, text="Confirm", command=confirm_and_notify, bg="#FFD166", font=("Montserrat ExtraBold", 10))
+    confirm_button.grid(row=2, column=0, columnspan=4, pady=(10, 5), padx=5, sticky="we")
 
     # Create a frame for the radio buttons
     radio_frame = ttk.Frame(center_frame)
@@ -216,14 +256,21 @@ def buy_product(is_brand_new):
 
     # Radio buttons for packaging type
     ttk.Radiobutton(radio_frame, text="No box (-₱200 on base price)", variable=packaging_var, value=0, command=on_packaging_change).grid(row=0, column=0, padx=10)
-    ttk.Radiobutton(radio_frame, text="Box (+₱200)", variable=packaging_var, value=1, command=on_packaging_change).grid(row=0, column=1, padx=10)
+    ttk.Radiobutton(radio_frame, text="Boxed (+₱200)", variable=packaging_var, value=1, command=on_packaging_change).grid(row=0, column=1, padx=10)
     ttk.Radiobutton(radio_frame, text="Clampshell (+₱300)", variable=packaging_var, value=2, command=on_packaging_change).grid(row=0, column=2, padx=10)
 
     # Create Treeview to display items
-    tree = ttk.Treeview(quantity_window, columns=('Name', 'Packaging', 'Quantity'), show='headings')
+    tree = ttk.Treeview(quantity_window, columns=('Name', 'Product Type', 'Packaging', 'Item Instance', 'Quantity'), show='headings')
     tree.heading('Name', text='Item Name')
+    tree.heading('Product Type', text='Product Type')
     tree.heading('Packaging', text='Package Type')
-    tree.heading('Quantity', text='Item Instance')
+    tree.heading('Item Instance', text='Item Instance')
+    tree.heading('Quantity', text='Quantity')
+    tree.column('Name', width=290, anchor='w')
+    tree.column('Product Type', width=80, anchor='c')
+    tree.column('Packaging', width=80, anchor='c')
+    tree.column('Item Instance', width=80, anchor='c')
+    tree.column('Quantity', width=80, anchor='c')
     tree.grid(row=4, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
     tree.bind('<<TreeviewSelect>>', on_tree_select)
 

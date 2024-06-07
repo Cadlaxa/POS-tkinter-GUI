@@ -1,14 +1,15 @@
 from pathlib import Path as P
 import tkinter as tk
-from tkinter import Tk, Canvas, Button, PhotoImage, messagebox, ttk, Entry, filedialog
+from tkinter import Tk, Entry, Button, PhotoImage, messagebox, ttk, filedialog
+import datetime
 from ruamel.yaml import YAML
 from PIL import Image, ImageTk
-import subprocess
 
 OUTPUT_PATH = P().parent
 ACCOUNTS_DIR = P('./Accounts')
 ACCOUNTS_DIR.mkdir(exist_ok=True)
 CART_FILE = ACCOUNTS_DIR / 'cart.yaml'
+ACCOUNTS_FILE = ACCOUNTS_DIR / 'users.yaml'
 ICON = P('./Assets/logour.png')
 yaml = YAML()
 title = "Checkout Items"
@@ -32,11 +33,12 @@ def load_cart_items(tree):
         if 'cart' in cart_data and 'items' in cart_data['cart']:
             for item in cart_data['cart']['items']:
                 name = item.get('Name', '')
+                ptype = item.get('Product Type', '')
                 price = item.get('Item Price', '')
                 packaging = item.get('Packaging', '')
                 total_price = item.get('Total Price (with or w/o box)', '')
-                quantity = item.get('quantity', '')
-                tree.insert('', 'end', values=(name, price, packaging, total_price, quantity))
+                quantity = item.get('Quantity', '')
+                tree.insert('', 'end', values=(name, ptype, price, packaging, total_price, quantity))
     except FileNotFoundError:
         print("Cart file not found.")
         return
@@ -45,16 +47,18 @@ def load_cart_items(tree):
         return
 
 # Add treeview to display cart items
-checkout_tree = ttk.Treeview(window, columns=('Name', 'Price', 'Packaging', 'Total Price', 'Quantity'), show='headings')
+checkout_tree = ttk.Treeview(window, columns=('Name', 'Product Type', 'Price', 'Packaging', 'Total Price', 'Quantity'), show='headings')
 checkout_tree.heading('Name', text='Name')
+checkout_tree.heading('Product Type', text='Product Type')
 checkout_tree.heading('Price', text='Price')
 checkout_tree.heading('Total Price', text='Total Price')
 checkout_tree.heading('Packaging', text='Packaging')
 checkout_tree.heading('Quantity', text='Quantity')
 checkout_tree.column('Name', width=300, anchor='w')
+checkout_tree.column('Product Type', width=80, anchor='c')
 checkout_tree.column('Price', width=80, anchor='c')
-checkout_tree.column('Total Price', width=80, anchor='c')
-checkout_tree.column('Packaging', width=120, anchor='c')
+checkout_tree.column('Total Price', width=120, anchor='c')
+checkout_tree.column('Packaging', width=80, anchor='c')
 checkout_tree.column('Quantity', width=60, anchor='c')
 checkout_tree.pack()
 
@@ -71,10 +75,10 @@ total_price_label.pack()
 def update_total_price(tree):
     total_price = 0.0
     for item in tree.get_children():
-        price_str = tree.item(item, 'values')[3]  # Extract total price string
-        price_str = price_str.replace('₱', '')  # Remove peso sign
-        total_price += float(price_str)
-    total_price_label.config(text=f"Total Price: ₱{total_price:.2f}")
+        total_price_str = tree.item(item, 'values')[4]  # Extract total price string
+        total_price_str = total_price_str.replace('₱', '').replace(',', '')
+        total_price += float(total_price_str)
+    total_price_label.config(text=f"Total Price: ₱{total_price:,.2f}")
 
 # Load cart items into treeview
 load_cart_items(checkout_tree)
@@ -85,24 +89,159 @@ amount_paid_label = ttk.Label(window, text="Amount Paid: ₱0.00", font=("Montse
 amount_paid_label.pack()
 
 def update_payment_status(payment_amount, total_price):
+    amount_paid_label.config(text=f"Amount Paid: ₱{payment_amount:,.2f}")
     if payment_amount >= total_price:
         receipt_button.config(state=tk.NORMAL)
     else:
         receipt_button.config(state=tk.DISABLED)
+        
+def get_username_from_yaml():
+    try:
+        with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as file:
+            account_data = yaml.load(file) or {}
+        
+        # Check if there is a user logged in
+        for username, details in account_data.items():
+            if details.get('logged', False):
+                print("Username found:", username)
+                return username
+        
+        print("No logged-in user found.")
+        return None
+    except FileNotFoundError:
+        print("Accounts file not found.")
+        return None
+    except Exception as e:
+        print(f"Error loading account details: {e}")
+        return None
 
-def print_receipt(tree):
-    receipt_text = "Receipt:\n\n"
-    for item in tree.get_children():
-        name, price, packaging, total_price, quantity = tree.item(item, 'values')
-        receipt_text += f"Name: {name}\nPrice: {price}\nPackaging: {packaging}\nTotal Price: {total_price}\nQuantity: {quantity}\n\n"
+def load_user_data(username):
+    try:
+        user_file_path = ACCOUNTS_FILE
+        print("User file path:", user_file_path)  # Debugging print
+        with open(user_file_path, 'r', encoding='utf-8') as file:
+            user_data = yaml.load(file) or {}
+        print("User data loaded successfully:", user_data)
+        return user_data
+    except FileNotFoundError:
+        print(f"User '{username}' file not found in account details.")
+        return {}
+    except Exception as e:
+        print(f"Error loading user data for '{username}': {e}")
+        return {}
 
-    # Ask user to select a file location
-    file_path = filedialog.asksaveasfilename(initialfile="receipt.txt", defaultextension=".txt", filetypes=[("Text files", "*.txt")])
-    if file_path:
-        # Save receipt to a UTF-8 encoded text file
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(receipt_text)
-        messagebox.showinfo("Receipt Saved", f"The receipt has been saved to:\n{file_path}")
+def print_receipt(tree, change):
+    try:
+        # Load account details
+        user_name = get_username_from_yaml()
+        user_data = load_user_data(user_name)
+
+        if not user_data:
+            print(f"User '{user_name}' not found in account details.")
+            return
+
+        if user_data.get('logged', True):
+            # Use username if logged in
+            name = user_name  
+        else:
+            # Use account name if not logged in
+            first_name = user_data.get('first_name', '')
+            last_name = user_data.get('last_name', '')
+            name = f"{last_name}, {first_name}"
+
+        # Get contact number from user data and validate
+        contact_number = user_data.get('contact_number', '')
+
+        # Validate contact number format
+        if not contact_number.isdigit() or len(contact_number) != 10:
+            contact_number = 'Invalid contact number'
+
+        # Initialize receipt text with header and user details
+        order_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        order_time = datetime.datetime.now().strftime("%H:%M:%S")
+        receipt_number = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+        receipt_text = f"""
+    ------------------------------------------------------
+                        Arti-San Receipt
+    ------------------------------------------------------
+    Order Date: {order_date}
+    Order Time: {order_time}
+    Receipt Number: {receipt_number}
+    -----------------------------------------------------
+    Name: {name}
+    Contact Number: {contact_number}
+    Shipping Address: {user_data.get('address', '')}
+    ----------------------------------------------------
+    Customer Contact: {contact_number}
+    Phone: (8) 7-000
+    Email: artisanoshop@gmail.com
+    -----------------------------------------------------
+          Description                      Price   
+    -----------------------------------------------------
+    """
+
+        # Add item details to the receipt text
+        total_package_cost = 0  # Initialize total packaging cost
+
+        for item in tree.get_children():
+            values = tree.item(item, 'values')
+            if len(values) == 6:  # Ensure the correct number of values is obtained
+                name, ptype, price, packaging, total_price, quantity = values  # Unpack the values
+
+                # Adjust packaging cost based on packaging type
+                if packaging == 'No box':
+                    packaging_cost = -200
+                elif packaging == 'Boxed':
+                    packaging_cost = 200
+                elif packaging == 'Clampshell':
+                    packaging_cost = 300
+                else:
+                    packaging_cost = 0  # Default value if packaging type is not recognized
+
+                # Accumulate packaging cost for each item type
+                total_package_cost += packaging_cost * int(quantity)
+                print(f"Total Packaging Cost: ₱{total_package_cost}")
+
+                # Add item details to receipt text
+                receipt_text += f"""
+    Item: {name}:       Price: {price}
+    Product Type: {ptype}
+    Quantity: {quantity}
+    Packaging Type: {packaging}\n
+    """
+        # Calculate subtotal, packaging cost, tax, and total
+        subtotal = sum(float(tree.item(item, 'values')[4].replace('₱', '').replace(',', '')) for item in tree.get_children())
+        total_package = packaging_cost * float(quantity)
+        tax = (subtotal + total_package) * 0.005
+        total = subtotal + total_package + tax
+
+        # Add subtotal, packaging cost, tax, change, and total to the receipt text
+        receipt_text += f"""
+    ------------------------------------------------------
+    Subtotal: ₱{subtotal:,.2f}
+    Total Packaging Cost: ₱{total_package:,.2f}
+    Tax (0.5%): ₱{tax:,.2f}
+    Change: ₱{change:,.2f}
+    ------------------------------------------------------
+    Total: ₱{total:,.2f} (including VAT)
+    Payment Method: Online Payment                          
+    ------------------------------------------------------
+                Thank you for Choosing Arti-San!
+                    Please Come Again!
+    ------------------------------------------------------
+    """
+
+        # Ask user to select a file location
+        file_path = filedialog.asksaveasfilename(initialfile="receipt.txt", defaultextension=".txt", filetypes=[("Text files", "*.txt")])
+        if file_path:
+            # Save receipt to a UTF-8 encoded text file
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(receipt_text)
+            messagebox.showinfo("Receipt Saved", f"The receipt has been saved to:\n{file_path}")
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred while saving the receipt: {e}")
+
 
 def add_amount():
     try:
@@ -110,7 +249,7 @@ def add_amount():
         if amount_to_add >= 0:
             current_amount = float(amount_paid_label.cget("text").replace("Amount Paid: ₱", "").replace(",", ""))
             updated_amount = current_amount + amount_to_add
-            amount_paid_label.config(text=f"Amount Paid: ₱{updated_amount:.2f}")
+            amount_paid_label.config(text=f"Amount Paid: ₱{updated_amount:,.2f}")
             update_payment_status(updated_amount, float(total_price_label.cget("text").replace("Total Price: ₱", "").replace(",", "")))
         else:
             raise ValueError("Negative amount not allowed.")
@@ -123,13 +262,19 @@ def reset_amount():
 
 def confirm_purchase():
     try:
-        payment_amount = float(amount_paid_label.cget("text").replace("Amount Paid: ₱", "").replace(",", ""))
-        total_price_str = total_price_label.cget("text").replace("Total Price: ₱", "")
-        total_price = float(total_price_str.replace(",", ""))  # Remove comma if present
+        payment_amount_str = amount_paid_label.cget("text").replace("Amount Paid: ₱", "").replace(",", "")
+        payment_amount = float(payment_amount_str)
+        
+        total_price_str = total_price_label.cget("text").replace("Total Price: ₱", "").replace(",", "")
+        total_price = float(total_price_str)  # No need to remove commas, since float() handles it
+        
         if payment_amount >= total_price:
+            # Calculate change
+            change = payment_amount - total_price
+            
             save_receipt = messagebox.askyesno("Save Receipt", "Purchase successful. Do you want to save the receipt?")
             if save_receipt:
-                print_receipt(checkout_tree)
+                print_receipt(checkout_tree, change)  # Pass change as an argument
             else:
                 messagebox.showinfo("Purchase Confirmed", "Purchase confirmed. Receipt not saved.")
             
@@ -165,7 +310,7 @@ confirm_purchase_button = Button(button_frame, text="Confirm Purchase", command=
 confirm_purchase_button.pack(side=tk.RIGHT, padx=10)
 
 # Button to save receipt
-receipt_button = Button(button_frame, text="Save Receipt", command=lambda: print_receipt(checkout_tree), bg="#46A9FF", font=("Montserrat ExtraBold", 10))
+receipt_button = Button(button_frame, text="Save Receipt", command=lambda: print_receipt(checkout_tree, 0), bg="#46A9FF", font=("Montserrat ExtraBold", 10))
 receipt_button.pack(side=tk.LEFT, padx=10)
 receipt_button.config(state=tk.DISABLED)  # Disable save receipt button initially
 
