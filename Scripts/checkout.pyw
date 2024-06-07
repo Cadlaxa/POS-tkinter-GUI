@@ -13,6 +13,7 @@ ACCOUNTS_FILE = ACCOUNTS_DIR / 'users.yaml'
 ICON = P('./Assets/logour.png')
 yaml = YAML()
 title = "Checkout Items"
+tax_value = 0.010
 
 def icon(window):
     img = PhotoImage(file=ICON)
@@ -69,7 +70,7 @@ payment_entry = Entry(window, font=("Montserrat SemiBold", 10))
 payment_entry.pack()
 
 # Total price label
-total_price_label = ttk.Label(window, text="Total Price: ₱0.00", font=("Montserrat SemiBold", 10))
+total_price_label = ttk.Label(window, text="Total Price (Tax Included): ₱0.00", font=("Montserrat SemiBold", 10))
 total_price_label.pack()
 
 def update_total_price(tree):
@@ -78,7 +79,11 @@ def update_total_price(tree):
         total_price_str = tree.item(item, 'values')[4]  # Extract total price string
         total_price_str = total_price_str.replace('₱', '').replace(',', '')
         total_price += float(total_price_str)
-    total_price_label.config(text=f"Total Price: ₱{total_price:,.2f}")
+    # Calculate tax
+    tax = total_price * tax_value
+    # Add tax to the total price
+    total_price_with_tax = total_price + tax
+    total_price_label.config(text=f"Total Price (Tax Included): ₱{total_price_with_tax:,.2f}")
 
 # Load cart items into treeview
 load_cart_items(checkout_tree)
@@ -208,12 +213,21 @@ def print_receipt(tree, change):
     Item: {name}:       Price: {price}
     Product Type: {ptype}
     Quantity: {quantity}
-    Packaging Type: {packaging}\n
+    Packaging Type: {packaging}
     """
         # Calculate subtotal, packaging cost, tax, and total
-        subtotal = sum(float(tree.item(item, 'values')[4].replace('₱', '').replace(',', '')) for item in tree.get_children())
-        total_package = packaging_cost * float(quantity)
-        tax = (subtotal + total_package) * 0.005
+        # Initialize variables
+        subtotal = 0.0
+        total_package = 0.0
+        
+        # Calculate subtotal
+        for item in tree.get_children():
+            total_price_str = tree.item(item, 'values')[4]
+            # Convert total price to float, excluding packaging cost
+            subtotal += float(total_price_str.replace('₱', '').replace(',', '')) - total_package_cost
+        
+        total_package = total_package_cost * len(tree.get_children())
+        tax = (subtotal + total_package) * tax_value
         total = subtotal + total_package + tax
 
         # Add subtotal, packaging cost, tax, change, and total to the receipt text
@@ -221,7 +235,7 @@ def print_receipt(tree, change):
     ------------------------------------------------------
     Subtotal: ₱{subtotal:,.2f}
     Total Packaging Cost: ₱{total_package:,.2f}
-    Tax (0.5%): ₱{tax:,.2f}
+    Tax (10%): ₱{tax:,.2f}
     Change: ₱{change:,.2f}
     ------------------------------------------------------
     Total: ₱{total:,.2f} (including VAT)
@@ -233,7 +247,7 @@ def print_receipt(tree, change):
     """
 
         # Ask user to select a file location
-        file_path = filedialog.asksaveasfilename(initialfile="receipt.txt", defaultextension=".txt", filetypes=[("Text files", "*.txt")])
+        file_path = filedialog.asksaveasfilename(initialfile="Arti-San Receipt.txt", defaultextension=".txt", filetypes=[("Text files", "*.txt")])
         if file_path:
             # Save receipt to a UTF-8 encoded text file
             with open(file_path, 'w', encoding='utf-8') as f:
@@ -242,7 +256,6 @@ def print_receipt(tree, change):
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred while saving the receipt: {e}")
 
-
 def add_amount():
     try:
         amount_to_add = float(payment_entry.get())
@@ -250,7 +263,7 @@ def add_amount():
             current_amount = float(amount_paid_label.cget("text").replace("Amount Paid: ₱", "").replace(",", ""))
             updated_amount = current_amount + amount_to_add
             amount_paid_label.config(text=f"Amount Paid: ₱{updated_amount:,.2f}")
-            update_payment_status(updated_amount, float(total_price_label.cget("text").replace("Total Price: ₱", "").replace(",", "")))
+            update_payment_status(updated_amount, float(total_price_label.cget("text").replace("Total Price (Tax Included): ₱", "").replace(",", "")))
         else:
             raise ValueError("Negative amount not allowed.")
     except ValueError:
@@ -258,14 +271,14 @@ def add_amount():
 
 def reset_amount():
     amount_paid_label.config(text="Amount Paid: ₱0.00")
-    update_payment_status(0, float(total_price_label.cget("text").replace("Total Price: ₱", "").replace(",", "")))
+    update_payment_status(0, float(total_price_label.cget("text").replace("Total Price (Tax Included): ₱", "").replace(",", "")))
 
 def confirm_purchase():
     try:
         payment_amount_str = amount_paid_label.cget("text").replace("Amount Paid: ₱", "").replace(",", "")
         payment_amount = float(payment_amount_str)
         
-        total_price_str = total_price_label.cget("text").replace("Total Price: ₱", "").replace(",", "")
+        total_price_str = total_price_label.cget("text").replace("Total Price (Tax Included): ₱", "").replace(",", "")
         total_price = float(total_price_str)  # No need to remove commas, since float() handles it
         
         if payment_amount >= total_price:
