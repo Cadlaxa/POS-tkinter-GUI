@@ -160,4 +160,5 @@ cython_debug/
 #.idea/
 
 # custom ignore
-*cart.yaml
+*/cart.yaml
+*/users.yaml
