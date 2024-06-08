@@ -159,6 +159,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# custom ignore
+
+# Custom gitignore items for this repo
 */cart.yaml
 */users.yaml
