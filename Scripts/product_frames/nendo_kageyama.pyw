@@ -9,18 +9,18 @@ import subprocess
 from PIL import Image, ImageTk
 
 OUTPUT_PATH = P().parent
-ASSETS_PATH = OUTPUT_PATH / P(r"Assets/products/authentic_castoria")
+ASSETS_PATH = OUTPUT_PATH / P(r"Assets/products/nendo_kageyama")
 ACCOUNTS_DIR = P('./Accounts')
 ACCOUNTS_DIR.mkdir(exist_ok=True)
 CART_FILE = ACCOUNTS_DIR / 'cart.yaml'
 ICON = P('./Assets/logour.png')
 yaml = YAML()
 
-Product = "Fate Grand Order: Caster/Altria Caster (3rd Ascension)"
+Product = "Haikyu!! - Tobio Kageyama"
 
 # Remove the commas and convert to an integer kasi mag e-error sya
-brand_new = 24999
-pre_owned = 15599
+brand_new = 2984
+pre_owned = 2244
 
 no_box = -200
 box_price = 200

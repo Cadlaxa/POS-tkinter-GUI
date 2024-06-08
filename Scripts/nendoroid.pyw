@@ -68,6 +68,9 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
 def miku():
     script_path = "Scripts/product_frames/authentic_miku.pyw"
     subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+def kageyama():
+    script_path = "Scripts/product_frames/nendo_kageyama.pyw"
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
 window = Tk()
 window.geometry("1143x619")
@@ -117,7 +120,7 @@ button_1.bind('<Leave>', button_1_leave)
 
 # Product 2 (kageyama)
 kageyana_img = PhotoImage(file=relative_to_assets("button_2.png"))
-button_2 = Button(image=kageyana_img, borderwidth=0, highlightthickness=0, command=lambda: print("button_2 clicked"), relief="flat")
+button_2 = Button(image=kageyana_img, borderwidth=0, highlightthickness=0, command=kageyama, relief="flat")
 button_2.place(x=314.0, y=220.0, width=245.59054565429688, height=352.1675720214844)
 button_hover_2 = load_and_resize_image("Assets/nendo_frame/button_2.png", scale_factor)
 def button_2_hover(e):
