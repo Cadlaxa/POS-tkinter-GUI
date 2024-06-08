@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Page</title>
+    <title>Artisan Payment Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,6 +12,8 @@
             background-image: url('Assets/login_frame/image_2.png');
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             backdrop-filter: blur(2px);
             background-color: rgba(255, 255, 255, 0.5);
         }
@@ -130,7 +132,7 @@
             
             // Send payment amount to Python script (or your server-side script)
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', "http://192.168.1.8:5500/payment.html"); // Update URL to your server-side endpoint
+            xhr.open('POST', "payment.html");
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function() {
                 if (xhr.status === 200) {

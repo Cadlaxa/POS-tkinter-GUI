@@ -8,9 +8,6 @@ import qrcode
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import threading
-import os
-import mimetypes
-import requests
 
 OUTPUT_PATH = P().parent
 ACCOUNTS_DIR = P('./Accounts')
@@ -21,7 +18,8 @@ ICON = P('./Assets/logour.png')
 yaml = YAML()
 title = "Checkout Items"
 tax_value = 0.010
-payment_link = 'http://192.168.1.8:5500/payment.html'
+payment_link = 'http://127.0.0.1:5500/payment.html'
+host_num = '127.0.0.1'
 
 def icon(window):
     img = PhotoImage(file=ICON)
@@ -110,6 +108,7 @@ def update_payment_status(payment_amount, total_price):
         
 def get_username_from_yaml():
     try:
+        yaml = YAML()
         with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as file:
             account_data = yaml.load(file) or {}
         
@@ -122,20 +121,20 @@ def get_username_from_yaml():
         print("No logged-in user found.")
         return None
     except FileNotFoundError:
-        print("Accounts file not found.")
+        messagebox.showinfo("Notice", "Accounts file not found.")
         return None
     except Exception as e:
-        print(f"Error loading account details: {e}")
+        messagebox.showinfo("Error", f"Error loading account details: {e}")
         return None
 
 def load_user_data(username):
     try:
+        yaml = YAML()
         user_file_path = ACCOUNTS_FILE
-        print("User file path:", user_file_path)  # Debugging print
         with open(user_file_path, 'r', encoding='utf-8') as file:
             user_data = yaml.load(file) or {}
         print("User data loaded successfully:", user_data)
-        return user_data
+        return user_data.get(username, {})
     except FileNotFoundError:
         print(f"User '{username}' file not found in account details.")
         return {}
@@ -155,7 +154,10 @@ def print_receipt(tree, change):
 
         if user_data.get('logged', True):
             # Use username if logged in
-            name = user_name  
+            name = user_name
+            first_name = user_data.get('first_name', '')
+            last_name = user_data.get('last_name', '')
+            fname = f"{last_name}, {first_name}"
         else:
             # Use account name if not logged in
             first_name = user_data.get('first_name', '')
@@ -164,6 +166,8 @@ def print_receipt(tree, change):
 
         # Get contact number from user data and validate
         contact_number = user_data.get('contact_number', '')
+
+        address = user_data.get('address', '')
 
         # Validate contact number format
         if not contact_number.isdigit() or len(contact_number) != 10:
@@ -182,9 +186,9 @@ def print_receipt(tree, change):
     Order Time: {order_time}
     Receipt Number: {receipt_number}
     -----------------------------------------------------
-    Name: {name}
+    Order For: ({name}) {fname}
     Contact Number: {contact_number}
-    Shipping Address: {user_data.get('address', '')}
+    Shipping Address: {address}
     ----------------------------------------------------
     Customer Contact: {contact_number}
     Phone: (8) 7-000
@@ -260,7 +264,14 @@ def print_receipt(tree, change):
             # Save receipt to a UTF-8 encoded text file
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(receipt_text)
-            messagebox.showinfo("Receipt Saved", f"The receipt has been saved to:\n{file_path}")
+            response = messagebox.askquestion("Receipt Saved", f"The receipt has been saved to:\n{file_path}\nDo you want to view your receipt?")
+            if response == "yes":
+                try:
+                    # Open the file using default application
+                    import os
+                    os.startfile(file_path)
+                except Exception as e:
+                    messagebox.showerror("Error", f"Unable to open the file: {str(e)}")
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred while saving the receipt: {e}")
 
@@ -303,7 +314,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         # For demonstration purposes, let's assume the payment is always confirmed
         payment_confirmed = True
         # Update payment status label
-        update_payment_status(payment_amount)
+        update_payment_server(payment_amount)
         # Confirm the purchase
         confirm_purchase()
         
@@ -316,7 +327,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(json.dumps(response).encode('utf-8'))
 
-def update_payment_status(payment_amount):
+def update_payment_server(payment_amount):
     try:
         payment_amount = int(payment_amount)
         amount_paid_label.config(text=f"Amount Paid: ₱{payment_amount:,.2f}")
@@ -324,7 +335,7 @@ def update_payment_status(payment_amount):
         print("Error: Paid amount is not an integer.")
 
 
-def run(server_class=HTTPServer, handler_class=RequestHandler, host='192.168.1.8', port=5500):
+def run(server_class=HTTPServer, handler_class=RequestHandler, host=host_num, port=5500):
     server_address = (host, port)
     httpd = server_class(server_address, handler_class)
     print(f'Starting server on {host}:{port}...')
