@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('Assets/login_frame/image_2.png');
+            background-size: cover;
+            background-position: center;
+            backdrop-filter: blur(2px);
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333333;
+        }
+
+        form {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #666666;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .btn-confirm {
+            background-color: #06D6A0;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-confirm:hover {
+            background-color: #027a5a;
+        }
+
+        .btn-reset {
+            background-color: #FF6384;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-reset:hover {
+            background-color: #c90b33;
+        }
+
+        .notification {
+            display: none;
+            text-align: center;
+            background-color: #FFD166;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .error {
+            display: none;
+            text-align: center;
+            background-color: #EF476F;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        #total-amount {
+            text-align: center;
+            margin-top: 20px;
+            color: #666666;
+        }
+
+        #total-amount-value {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Arti-san Transaction</h1>
+        <form id="payment-form">
+            <label for="amount">Enter Payment Amount:</label>
+            <input type="number" id="amount" name="amount" placeholder="Enter amount" required>
+            <button type="submit" class="btn-confirm">Confirm Payment</button>
+            <button type="button" class="btn-reset" id="reset-btn">Reset Amount</button>
+        </form>
+        <div class="notification" id="payment-notification">Payment successful!</div>
+        <div class="error" id="payment-error">Payment failed. Please try again later.</div>
+    </div>
+
+    <script>
+        // JavaScript code for handling form submission and reset
+        document.getElementById('payment-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var paymentAmount = document.getElementById('amount').value;
+            
+            // Send payment amount to Python script (or your server-side script)
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', "http://192.168.1.8:5500/payment.html"); // Update URL to your server-side endpoint
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // Parse response from server-side script
+                    var response = JSON.parse(xhr.responseText);
+                    
+                    // Check if payment is confirmed
+                    if (response.payment_confirmed) {
+                        // Show confirmation notification
+                        document.getElementById('payment-notification').style.display = 'block';
+                        setTimeout(function() {
+                            document.getElementById('payment-notification').style.display = 'none';
+                        }, 3000); // Hide notification after 3 seconds
+                    } else {
+                        // Show error notification
+                        document.getElementById('payment-error').style.display = 'block';
+                        setTimeout(function() {
+                            document.getElementById('payment-error').style.display = 'none';
+                        }, 3000); // Hide notification after 3 seconds
+                    }
+                    
+                } else {
+                    // Show error notification
+                    document.getElementById('payment-error').style.display = 'block';
+                    setTimeout(function() {
+                        document.getElementById('payment-error').style.display = 'none';
+                    }, 3000); // Hide notification after 3 seconds
+                }
+            };
+            xhr.send(JSON.stringify({ total_price: paymentAmount }));
+        });
+
+        // Reset button functionality
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            document.getElementById('amount').value = ''; // Clear input field
+            document.getElementById('payment-notification').style.display = 'none'; // Hide any notifications
+            document.getElementById('payment-error').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

@@ -4,6 +4,13 @@ from tkinter import Tk, Entry, Button, PhotoImage, messagebox, ttk, filedialog
 import datetime
 from ruamel.yaml import YAML
 from PIL import Image, ImageTk
+import qrcode
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import json
+import threading
+import os
+import mimetypes
+import requests
 
 OUTPUT_PATH = P().parent
 ACCOUNTS_DIR = P('./Accounts')
@@ -14,6 +21,7 @@ ICON = P('./Assets/logour.png')
 yaml = YAML()
 title = "Checkout Items"
 tax_value = 0.010
+payment_link = 'http://192.168.1.8:5500/payment.html'
 
 def icon(window):
     img = PhotoImage(file=ICON)
@@ -273,6 +281,93 @@ def reset_amount():
     amount_paid_label.config(text="Amount Paid: ₱0.00")
     update_payment_status(0, float(total_price_label.cget("text").replace("Total Price (Tax Included): ₱", "").replace(",", "")))
 
+class RequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/payment.html':
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            with open('payment.html', 'rb') as f:
+                self.wfile.write(f.read())
+        else:
+            self.send_error(404)
+
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        payment_info = json.loads(post_data)
+        
+        payment_amount = payment_info.get('total_price', 0)
+        
+        # Here, you can implement payment processing logic
+        # For demonstration purposes, let's assume the payment is always confirmed
+        payment_confirmed = True
+        # Update payment status label
+        update_payment_status(payment_amount)
+        # Confirm the purchase
+        confirm_purchase()
+        
+        response = {
+            'payment_confirmed': payment_confirmed,
+            'total_amount': payment_amount
+        }
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps(response).encode('utf-8'))
+
+def update_payment_status(payment_amount):
+    try:
+        payment_amount = int(payment_amount)
+        amount_paid_label.config(text=f"Amount Paid: ₱{payment_amount:,.2f}")
+    except ValueError:
+        print("Error: Paid amount is not an integer.")
+
+
+def run(server_class=HTTPServer, handler_class=RequestHandler, host='192.168.1.8', port=5500):
+    server_address = (host, port)
+    httpd = server_class(server_address, handler_class)
+    print(f'Starting server on {host}:{port}...')
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print('Server interrupted. Closing...')
+        httpd.server_close()
+
+# Define a function to start the server in a separate thread
+def start_server():
+    run()
+
+# Call the function to start the server in a separate thread
+server_thread = threading.Thread(target=start_server)
+server_thread.daemon = True 
+server_thread.start()
+
+def display_qr_code(link):
+    # Generate QR code with the payment link
+    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=7, border=4)
+    qr.add_data(link)
+    qr.make(fit=True)
+
+    # Create image from the QR code
+    qr_image = qr.make_image(fill_color="black", back_color="white")
+
+    # Convert PIL Image to Tkinter PhotoImage
+    qr_image_tk = ImageTk.PhotoImage(qr_image)
+
+    # Create a new window to display the QR code
+    qr_window = tk.Toplevel(window)
+    qr_window.title("Payment QR Code")
+
+    # Display the QR code on the new window
+    qr_label = tk.Label(qr_window, image=qr_image_tk)
+    qr_label.image = qr_image_tk
+    qr_label.pack()
+    icon(qr_window)
+
+    # Close the QR window when the user closes it
+    qr_window.protocol("WM_DELETE_WINDOW", qr_window.destroy)
+
 def confirm_purchase():
     try:
         payment_amount_str = amount_paid_label.cget("text").replace("Amount Paid: ₱", "").replace(",", "")
@@ -321,6 +416,10 @@ reset_amount_button.pack(side=tk.LEFT, padx=10)
 # Button to confirm purchase
 confirm_purchase_button = Button(button_frame, text="Confirm Purchase", command=confirm_purchase, bg="#31F5C2", font=("Montserrat ExtraBold", 10))
 confirm_purchase_button.pack(side=tk.RIGHT, padx=10)
+
+# Button to show QR code
+show_qr_button = tk.Button(button_frame, text="Pay with a device", command=lambda: display_qr_code(payment_link), bg="#46A9FF", font=("Montserrat ExtraBold", 10))
+show_qr_button.pack(side=tk.LEFT, padx=10)
 
 # Button to save receipt
 receipt_button = Button(button_frame, text="Save Receipt", command=lambda: print_receipt(checkout_tree, 0), bg="#46A9FF", font=("Montserrat ExtraBold", 10))
