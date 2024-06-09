@@ -12,7 +12,7 @@ import socket
 import re
 import http.server
 import socketserver
-import webbrowser
+import time
 import os
 
 OUTPUT_PATH = P().parent
@@ -391,15 +391,13 @@ class RequestHandler(BaseHTTPRequestHandler):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
         payment_info = json.loads(post_data)
-        
         payment_amount = payment_info.get('total_price', 0)
         
-        # Here, you can implement payment processing logic
-        # For demonstration purposes, let's assume the payment is always confirmed
         payment_confirmed = True
         # Update payment status label
         update_payment_server(payment_amount)
         # Confirm the purchase
+        time.sleep(1)
         confirm_purchase()
         
         response = {
@@ -445,14 +443,14 @@ def display_qr_code(link):
     qr.make(fit=True)
 
     # Create image from the QR code
-    qr_image = qr.make_image(fill_color="black", back_color="white")
+    qr_image = qr.make_image(fill_color="#00AC7F", back_color="#F0F3F6")
 
     # Convert PIL Image to Tkinter PhotoImage
     qr_image_tk = ImageTk.PhotoImage(qr_image)
 
     # Create a new window to display the QR code
     qr_window = tk.Toplevel(window)
-    qr_window.title("Payment QR Code")
+    qr_window.title("Pay with a Device")
 
     # Display the QR code on the new window
     qr_label = tk.Label(qr_window, image=qr_image_tk)
