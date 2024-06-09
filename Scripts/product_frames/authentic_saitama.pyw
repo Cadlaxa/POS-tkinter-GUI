@@ -284,7 +284,7 @@ window.configure(bg = "#FFFFFF")
 window.title(Product)
 
 # Checkout and Remove Items keyboard shortcut
-def checkout_script(event):
+def checkout_script_key(event):
     script_path = "Scripts/checkout.pyw"
     startup_info = subprocess.STARTUPINFO()
     startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -296,7 +296,7 @@ def checkout_script(event):
 def remove_script(event):
     script_path = "Scripts/remove_items.pyw"
     subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
-window.bind("<Return>", checkout_script)
+window.bind("<Return>", checkout_script_key)
 window.bind("<BackSpace>", remove_script)
 
 canvas = Canvas(window,bg = "#FFFFFF", height = 622, width = 1148, bd = 0, highlightthickness = 0, relief = "ridge")

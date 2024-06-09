@@ -2,8 +2,8 @@ admin:
   username: admin
   password: admin
   email: email
-  first_name: fname
-  last_name: lname
+  f: fname
+  last_name: lirst_namename
   contact_number: '1234567890'
   address: address
   house_number: house
