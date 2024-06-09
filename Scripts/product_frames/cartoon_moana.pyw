@@ -1,4 +1,3 @@
-
 from pathlib import Path as P
 
 # from tkinter import *
@@ -10,18 +9,18 @@ import subprocess
 from PIL import Image, ImageTk
 
 OUTPUT_PATH = P().parent
-ASSETS_PATH = OUTPUT_PATH / P(r"Assets/products/authentic_ahri")
+ASSETS_PATH = OUTPUT_PATH / P(r"Assets/products/cartoon_moana")
 ACCOUNTS_DIR = P('./Accounts')
 ACCOUNTS_DIR.mkdir(exist_ok=True)
 CART_FILE = ACCOUNTS_DIR / 'cart.yaml'
 ICON = P('./Assets/logour.png')
 yaml = YAML()
 
-Product = "League of Legends: Ahri-Star Guardian"
+Product = "Moana's Journey: The Spirit of the Ocean Solo Figurine"
 
 # Remove the commas and convert to an integer kasi mag e-error sya
-brand_new = 25450
-pre_owned = 15999
+brand_new = 7000
+pre_owned = 4050
 
 no_box = -200
 box_price = 200
@@ -318,7 +317,7 @@ image_4 = canvas.create_image(189.66064453125, 362.67041015625, image=image_imag
 
 # Product Images
 image_image_5 = PhotoImage(file=relative_to_assets("image_5.png"))
-image_5 = canvas.create_image(190.971923828125, 344.98175048828125, image=image_image_5)
+image_5 = canvas.create_image(190.971923828125, 363, image=image_image_5)
 
 image_image_6 = PhotoImage(file=relative_to_assets("image_6.png"))
 image_6 = canvas.create_image(537.0, 242.0, image=image_image_6)

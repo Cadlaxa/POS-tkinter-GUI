@@ -283,6 +283,22 @@ window.geometry("1148x622")
 window.configure(bg = "#FFFFFF")
 window.title(Product)
 
+# Checkout and Remove Items keyboard shortcut
+def checkout_script(event):
+    script_path = "Scripts/checkout.pyw"
+    startup_info = subprocess.STARTUPINFO()
+    startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startup_info.wShowWindow = subprocess.SW_HIDE
+    try:
+        subprocess.Popen(['python', script_path], startupinfo=startup_info)
+    except Exception as e:
+        print("Error executing checkout script:", e)
+def remove_script(event):
+    script_path = "Scripts/remove_items.pyw"
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+window.bind("<Return>", checkout_script)
+window.bind("<BackSpace>", remove_script)
+
 canvas = Canvas(window,bg = "#FFFFFF", height = 622, width = 1148, bd = 0, highlightthickness = 0, relief = "ridge")
 canvas.place(x = 0, y = 0)
 canvas.create_rectangle(0.0, 0.0, 1148.4010009765625, 622.3092041015625, fill="#FFFFFF", outline="")

@@ -257,7 +257,7 @@ def print_receipt(tree, change):
     Phone: (8) 7-000
     Email: artisanoshop@gmail.com
     -----------------------------------------------------
-          Description                      Price   
+                  Descriptions of Products:
     -----------------------------------------------------
     """
 
@@ -285,10 +285,11 @@ def print_receipt(tree, change):
 
                 # Add item details to receipt text
                 receipt_text += f"""
-    Item: {name}:       Price: {price}
+    Item: {name}:
     Product Type: {ptype}
     Quantity: {quantity}
     Packaging Type: {packaging}
+    Price: {price}
     """
         # Calculate subtotal, packaging cost, tax, and total
         # Initialize variables

@@ -1,4 +1,3 @@
-
 from pathlib import Path as P
 
 # from tkinter import *
@@ -10,18 +9,18 @@ import subprocess
 from PIL import Image, ImageTk
 
 OUTPUT_PATH = P().parent
-ASSETS_PATH = OUTPUT_PATH / P(r"Assets/products/authentic_ahri")
+ASSETS_PATH = OUTPUT_PATH / P(r"Assets/products/cartoon_anna")
 ACCOUNTS_DIR = P('./Accounts')
 ACCOUNTS_DIR.mkdir(exist_ok=True)
 CART_FILE = ACCOUNTS_DIR / 'cart.yaml'
 ICON = P('./Assets/logour.png')
 yaml = YAML()
 
-Product = "League of Legends: Ahri-Star Guardian"
+Product = "Anna of Arendelle: A Frozen Adventure Solo Figurine"
 
 # Remove the commas and convert to an integer kasi mag e-error sya
-brand_new = 25450
-pre_owned = 15999
+brand_new = 9750
+pre_owned = 5999
 
 no_box = -200
 box_price = 200

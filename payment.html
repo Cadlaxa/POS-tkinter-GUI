@@ -148,18 +148,24 @@
             xhr.open('POST', "http://192.168.1.8:5500/payment.html");
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function() {
+                console.log('Response status:', xhr.status);
+                console.log('Response:', xhr.responseText);
+    
                 if (xhr.status === 200) {
                     // Parse response from server-side script
                     var response = JSON.parse(xhr.responseText);
+                    console.log('Parsed response:', response);
                     
                     // Check if payment is confirmed
                     if (response.payment_confirmed) {
+                        console.log('Payment confirmed');
                         // Show confirmation notification
                         document.getElementById('payment-notification').style.display = 'block';
                         setTimeout(function() {
                             document.getElementById('payment-notification').style.display = 'none';
                         }, 3000); // Hide notification after 3 seconds
                     } else {
+                        console.log('Payment failed');
                         // Show error notification
                         document.getElementById('payment-error').style.display = 'block';
                         setTimeout(function() {
@@ -168,6 +174,7 @@
                     }
                     
                 } else {
+                    console.log('Error:', xhr.statusText);
                     // Show error notification
                     document.getElementById('payment-error').style.display = 'block';
                     setTimeout(function() {
@@ -175,9 +182,17 @@
                     }, 3000); // Hide notification after 3 seconds
                 }
             };
+            xhr.onerror = function() {
+                console.error('Request failed');
+                // Show error notification
+                document.getElementById('payment-error').style.display = 'block';
+                setTimeout(function() {
+                    document.getElementById('payment-error').style.display = 'none';
+                }, 3000); // Hide notification after 3 seconds
+            };
             xhr.send(JSON.stringify({ total_price: paymentAmount }));
         });
-
+    
         // Reset button functionality
         document.getElementById('reset-btn').addEventListener('click', function() {
             document.getElementById('amount').value = ''; // Clear input field
@@ -185,5 +200,6 @@
             document.getElementById('payment-error').style.display = 'none';
         });
     </script>
+    
 </body>
 </html>
