@@ -8,6 +8,12 @@ import qrcode
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import threading
+import socket
+import re
+import http.server
+import socketserver
+import webbrowser
+import os
 
 OUTPUT_PATH = P().parent
 ACCOUNTS_DIR = P('./Accounts')
@@ -18,12 +24,69 @@ ICON = P('./Assets/logour.png')
 yaml = YAML()
 title = "Checkout Items"
 tax_value = 0.010
-payment_link = 'http://127.0.0.1:5500/payment.html'
-host_num = '127.0.0.1'
+
+
+#payment_link = 'http://192.168.1.1:5500/payment.html'
+
+# Function to get the local IP address (IP address of the connected Wi-Fi)
+def get_local_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(0)
+        s.connect(('8.8.8.8', 1))  # doesn't have to be reachable
+        local_ip = s.getsockname()[0]
+        s.close()
+        return local_ip
+    except Exception as e:
+        print(f"Error fetching local IP: {e}")
+        return None
+
+# Function to generate payment link using public IP address
+def generate_payment_link():
+    ip_address = get_local_ip()
+    if ip_address:
+        payment_link = f'http://{ip_address}:5500/payment.html'
+        return payment_link
+    else:
+        return None
+
+# Function to generate payment link using local IP address
+def generate_host_link():
+    local_ip = get_local_ip()
+    if local_ip:
+        host_link = local_ip
+        return host_link
+    else:
+        return None
+
+def update_post_url_in_html(html_file_path, payment_link):
+    try:
+        with open(html_file_path, 'r') as file:
+            html_content = file.read()
+        updated_html_content = re.sub(r'http://[a-zA-Z0-9.-]+(:[0-9]+)?/payment.html', payment_link, html_content)
+        with open(html_file_path, 'w') as file:
+            file.write(updated_html_content)
+        print("POST URL in HTML file updated successfully.")
+    except FileNotFoundError:
+        print("HTML file not found.")
+    except Exception as e:
+        print("Error:", e)
+
+# Usage
+payment_link = generate_payment_link()
+html_file_path = 'payment.html'
+update_post_url_in_html(html_file_path, payment_link)
+if payment_link:
+    print(f"Payment link: {payment_link}")
+else:
+    print("Failed to generate payment link.")
+
+host_num = generate_host_link()
 
 def icon(window):
     img = PhotoImage(file=ICON)
     window.tk.call('wm', 'iconphoto', window._w, img)
+
 
 window = Tk()
 window.title(title)
@@ -291,6 +354,27 @@ def add_amount():
 def reset_amount():
     amount_paid_label.config(text="Amount Paid: ₱0.00")
     update_payment_status(0, float(total_price_label.cget("text").replace("Total Price (Tax Included): ₱", "").replace(",", "")))
+
+class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        super().end_headers()
+
+def serve_directory(directory, port=8080):
+    os.chdir(directory)  # Change directory to the one you want to serve
+    handler = MyHTTPRequestHandler
+    with socketserver.TCPServer(("", port), handler) as httpd:
+        print(f"Serving directory '{directory}' at http://{host_num}:{port}")
+        #webbrowser.open_new_tab(f"http://{host_num}:{port}")
+        httpd.serve_forever()
+
+def start_server():
+    serve_directory("\POS-tkinter-GUI")
+
+# Call the function to start the server in a separate thread
+server_thread = threading.Thread(target=start_server)
+server_thread.daemon = True
+server_thread.start()
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):

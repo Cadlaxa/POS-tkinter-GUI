@@ -51,8 +51,14 @@ def write_to_yaml(data):
         yaml.dump(data, file)
 
 def checkout_script():
-        script_path = "Scripts/checkout.pyw"
-        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    script_path = "Scripts/checkout.pyw"
+    startup_info = subprocess.STARTUPINFO()
+    startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startup_info.wShowWindow = subprocess.SW_HIDE
+    try:
+        subprocess.Popen(['python', script_path], startupinfo=startup_info)
+    except Exception as e:
+        print("Error executing checkout script:", e)
 
 def remove_item_script():
         script_path = "Scripts/remove_items.pyw"

@@ -7,4 +7,14 @@ admin:
   contact_number: '1234567890'
   address: address
   house_number: house
-  logged: True
+  logged: true
+cadlaxa:
+  username: cadlaxa
+  password: password
+  email: cadag113003@gmail.com
+  first_name: Jhon Paolo
+  last_name: Cadag
+  contact_number: '09651993541'
+  address: Blk 41 Lot 70 Phase 6 Dasma 3 Golden City Salawag Cavite
+  house_number: near the water tank
+  logged: false

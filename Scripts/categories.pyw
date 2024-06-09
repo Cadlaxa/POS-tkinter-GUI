@@ -116,7 +116,13 @@ window.title("Welcome to Arti-san")
 # Checkout and Remove Items keyboard shortcut
 def checkout_script(event):
     script_path = "Scripts/checkout.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    startup_info = subprocess.STARTUPINFO()
+    startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startup_info.wShowWindow = subprocess.SW_HIDE
+    try:
+        subprocess.Popen(['python', script_path], startupinfo=startup_info)
+    except Exception as e:
+        print("Error executing checkout script:", e)
 def remove_script(event):
     script_path = "Scripts/remove_items.pyw"
     subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())

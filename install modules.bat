@@ -16,6 +16,8 @@ cd \python%python_ver%\Scripts\
 pip install tk
 pip install ruamel.yaml
 pip install pillow
+pip install qrcode
+
 
 :: Define the source and intermediate directories
 set "source_font_dir=%cd%POS-tkinter-GUI\Assets\Montserrat static fonts"
