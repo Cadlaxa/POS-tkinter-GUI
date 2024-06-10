@@ -95,6 +95,7 @@ def button_1_leave(e):
 button_1.bind('<Enter>', button_1_hover)
 button_1.bind('<Leave>', button_1_leave)
 
+window.bind("<Escape>", quit)
 icon(window)
 window.resizable(False, False)
 window.mainloop()

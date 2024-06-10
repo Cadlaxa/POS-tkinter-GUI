@@ -520,5 +520,6 @@ receipt_button = Button(button_frame, text="Save Receipt", command=lambda: print
 receipt_button.pack(side=tk.LEFT, padx=10)
 receipt_button.config(state=tk.DISABLED)  # Disable save receipt button initially
 
+window.bind("<Escape>", quit)
 icon(window)
 window.mainloop()

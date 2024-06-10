@@ -191,6 +191,8 @@ image_8 = canvas.create_image(571.0, 61.0, image=image_image_8)
 
 canvas.create_text(440.0, 36.0, anchor="nw",
                    text=textheader, fill="#FFFFFF", font=("Montserrat SemiBold", 32 * -1))
+
+window.bind("<Escape>", quit)
 icon(window)
 window.resizable(False, False)
 window.mainloop()

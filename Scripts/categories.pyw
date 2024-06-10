@@ -267,6 +267,7 @@ button_4.bind('<Enter>', on_enter_4)
 button_4.bind('<Leave>', on_leave_4)
 button_4.bind('<Motion>', on_motion_4)
 
+window.bind("<Escape>", quit)
 icon(window)
 window.resizable(False, False)
 window.mainloop()

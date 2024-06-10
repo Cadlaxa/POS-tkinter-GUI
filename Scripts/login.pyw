@@ -58,6 +58,9 @@ def login():
             return
     messagebox.showerror("Login", "Invalid username or email or password.")
 
+def login_key(event):
+    login()
+
 def signup_script():
         script_path = "Scripts/signup.pyw"
         subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
@@ -134,6 +137,7 @@ def button_1_leave(e):
     )
 button_1.bind('<Enter>', button_1_hover)
 button_1.bind('<Leave>', button_1_leave)
+window.bind("<Return>", login_key)
 
 # Signup Button
 signup_b = PhotoImage(file=relative_to_assets("button_2.png"))
@@ -196,6 +200,7 @@ def toggle_password():
 button_4 = Button(image=unsee_pass, borderwidth=0, highlightthickness=0, command=toggle_password, relief="flat")
 button_4.place(x=419.0, y=389.0, width=37.0, height=37.0)
 
+window.bind("<Escape>", quit)
 icon(window)
 window.resizable(False, False)
 window.mainloop()

@@ -2,7 +2,7 @@ admin:
   username: admin
   password: admin
   email: email
-  ffirst_name: fname
+  first_name: fname
   last_name: lname
   contact_number: '1234567890'
   address: address

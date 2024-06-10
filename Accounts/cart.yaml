@@ -1,23 +1,2 @@
 cart:
-  items:
-  - Name: 'League of Legends: Ahri-Star Guardian'
-    Product Type: Brand New
-    Item Price: ₱25450
-    Packaging: Clampshell
-    Total Price (with or w/o box): ₱77250
-    Item Instance: 1
-    Quantity: 3
-  - Name: 'League of Legends: Ahri-Star Guardian'
-    Product Type: Brand New
-    Item Price: ₱25450
-    Packaging: No box
-    Total Price (with or w/o box): ₱50500
-    Item Instance: 1
-    Quantity: 2
-  - Name: 'League of Legends: Ahri-Star Guardian'
-    Product Type: Brand New
-    Item Price: ₱25450
-    Packaging: Boxed
-    Total Price (with or w/o box): ₱205200
-    Item Instance: 1
-    Quantity: 8
+  items: []

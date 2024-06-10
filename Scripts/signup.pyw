@@ -81,6 +81,9 @@ def create_account():
             messagebox.showinfo("Signup", "Account created successfully!")
             window.destroy()
 
+def create_account_key(event):
+    create_account()
+
 window = Tk()
 window.geometry("1080x616")
 window.configure(bg = "#FFFFFF")
@@ -220,7 +223,9 @@ def button_1_leave(e):
     )
 button_1.bind('<Enter>', button_1_hover)
 button_1.bind('<Leave>', button_1_leave)
+window.bind("<Return>", create_account_key)
 
+window.bind("<Escape>", quit)
 icon(window)
 window.resizable(False, False)
 window.mainloop()

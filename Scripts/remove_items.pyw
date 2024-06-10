@@ -88,5 +88,6 @@ def remove_item_window():
     remove_button.pack(fill='x')
 remove_item_window()
 
+window.bind("<Escape>", quit)
 icon(window)
 window.mainloop()

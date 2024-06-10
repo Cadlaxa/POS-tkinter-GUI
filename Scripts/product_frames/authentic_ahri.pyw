@@ -496,6 +496,7 @@ button_4.place(x=923.0, y=527.0, width=171.0, height=39.08679962158203)
 image_image_8 = PhotoImage(file=relative_to_assets("image_8.png"))
 image_8 = canvas.create_image(919.0, 363.0, image=image_image_8)
 
+window.bind("<Escape>", quit)
 icon(window)
 window.resizable(False, False)
 window.mainloop()

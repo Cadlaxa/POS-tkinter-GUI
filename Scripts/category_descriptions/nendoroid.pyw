@@ -94,6 +94,8 @@ image_1 = canvas.create_image(
     332.0,
     image=image_image_1
 )
+
+window.bind("<Escape>", quit)
 icon(window)
 window.resizable(False, False)
 window.mainloop()
