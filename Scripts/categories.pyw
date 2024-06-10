@@ -1,9 +1,10 @@
 from pathlib import Path as P
 import tkinter as tk
-from tkinter import Tk, Canvas, Button, PhotoImage
+from tkinter import Tk, Canvas, Button, PhotoImage, messagebox
 from ruamel.yaml import YAML
 import subprocess
 import time
+from PIL import Image, ImageTk
 
 OUTPUT_PATH = P().parent
 ASSETS_PATH = OUTPUT_PATH / P(r"Assets/categ_frame")
@@ -112,6 +113,130 @@ def cartoon_product():
     script_path = "Scripts/cartoon.pyw"
     subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
+def logout(event):
+    logout_mech()
+def logout_mech():
+    def get_username_from_yaml():
+        try:
+            yaml = YAML()
+            with open(USERS_FILE, 'r', encoding='utf-8') as file:
+                account_data = yaml.load(file) or {}
+            
+            # Check if there is a user logged in
+            for username, details in account_data.items():
+                if details.get('logged', False):
+                    print("Username found:", username)
+                    return username
+            
+            print("No logged-in user found.")
+            return None
+        except FileNotFoundError:
+            messagebox.showinfo("Notice", "Accounts file not found.")
+            return None
+        except Exception as e:
+            messagebox.showinfo("Error", f"Error loading account details: {e}")
+            return None
+
+    def load_user_data(username):
+        try:
+            yaml = YAML()
+            user_file_path = USERS_FILE
+            with open(user_file_path, 'r', encoding='utf-8') as file:
+                user_data = yaml.load(file) or {}
+            return user_data.get(username, {})
+        except FileNotFoundError:
+            print(f"User '{username}' file not found in account details.")
+            return {}
+        except Exception as e:
+            print(f"Error loading user data for '{username}': {e}")
+            return {}
+    
+    user_name = get_username_from_yaml()
+    user_data = load_user_data(user_name)
+
+    if not user_data:
+        print(f"User '{user_name}' not found in account details.")
+        return
+
+    if user_data.get('logged', True):
+        # Use username if logged in
+        nname = user_name
+    ae_n_s_er = messagebox.askyesno("Loging out", f"Do you want to log out {nname}?")
+    if ae_n_s_er:
+        window.destroy()
+        script_path = "Scripts/login.pyw"
+        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    else:
+        return    
+    
+def name_on_header():
+    def get_username_from_yaml():
+        try:
+            yaml = YAML()
+            with open(USERS_FILE, 'r', encoding='utf-8') as file:
+                account_data = yaml.load(file) or {}
+            for username, details in account_data.items():
+                if details.get('logged', False):
+                    print("Username found:", username)
+                    return username
+            print("No logged-in user found.")
+            return None
+        except FileNotFoundError:
+            messagebox.showinfo("Notice", "Accounts file not found.")
+            return None
+        except Exception as e:
+            messagebox.showinfo("Error", f"Error loading account details: {e}")
+            return None
+
+    def load_user_data(username):
+        try:
+            yaml = YAML()
+            user_file_path = USERS_FILE
+            with open(user_file_path, 'r', encoding='utf-8') as file:
+                user_data = yaml.load(file) or {}
+            return user_data.get(username, {})
+        except FileNotFoundError:
+            print(f"User '{username}' file not found in account details.")
+            return {}
+        except Exception as e:
+            print(f"Error loading user data for '{username}': {e}")
+            return {}
+
+    user_name = get_username_from_yaml()
+    if not user_name:
+        return "There!"
+    user_data = load_user_data(user_name)
+    if not user_data:
+        print(f"User '{user_name}' not found in account details.")
+        return "There!"
+    if user_data.get('logged', False):
+        return f"Hello {user_name}!"
+    return "There!"
+
+def resize_image_if_needed(canvas, text_id, image_path, padding=50):
+    text_bbox = canvas.bbox(text_id)
+    text_width = text_bbox[2] - text_bbox[0]
+    
+    image = Image.open(image_path)
+    image_width, image_height = image.size
+
+    if text_width + padding > image_width:
+        new_image_width = text_width + padding
+        left_part = image.crop((0, 0, image_width // 3, image_height))
+        middle_part = image.crop((image_width // 3, 0, 2 * image_width // 3, image_height))
+        right_part = image.crop((2 * image_width // 3, 0, image_width, image_height))
+
+        new_middle_width = new_image_width - (left_part.width + right_part.width)
+        middle_part = middle_part.resize((new_middle_width, image_height))
+
+        new_image = Image.new("RGBA", (new_image_width, image_height))
+        new_image.paste(left_part, (0, 0))
+        new_image.paste(middle_part, (left_part.width, 0))
+        new_image.paste(right_part, (left_part.width + middle_part.width, 0))
+
+        return ImageTk.PhotoImage(new_image)
+    return ImageTk.PhotoImage(image)
+
 def icon(window):
     img = PhotoImage(file=ICON)
     window.tk.call('wm', 'iconphoto', window._w, img)
@@ -165,11 +290,22 @@ cart_img = PhotoImage(file=relative_to_assets("image_6.png"))
 image_6 = canvas.create_image(914.0, 60.0, image=cart_img)
 
 # Header text
-image_image_7 = PhotoImage(file=relative_to_assets("image_7.png"))
+nickname = canvas.create_text(0, 0, anchor="nw", text=name_on_header(), fill="#FFFFFF", font=("Montserrat SemiBold", 32 * -1))
+canvas.update_idletasks()
+canvas_width = canvas.winfo_width()
+text_bbox = canvas.bbox(nickname)
+text_width = text_bbox[2] - text_bbox[0]
+x = (canvas_width - text_width) / 2
+canvas.coords(nickname, x, 37)
+
+# Resize image if needed based on text width
+image_image_71 = file=relative_to_assets("image_7.png")
+image_image_81 = file=relative_to_assets("image_8.png")
+image_image_7 = resize_image_if_needed(canvas, nickname, image_image_71, padding=130)
+image_image_8 = resize_image_if_needed(canvas, nickname, image_image_81, padding=50)
 image_7 = canvas.create_image(572.0, 64.0, image=image_image_7)
-image_image_8 = PhotoImage(file=relative_to_assets("image_8.png"))
 image_8 = canvas.create_image(571.0, 61.0, image=image_image_8)
-canvas.create_text(470.0, 37.0, anchor="nw", text="Hello There!", fill="#FFFFFF", font=("Montserrat SemiBold", 32 * -1))
+canvas.tag_raise(nickname)
 
 # Class A (Resin)
 resin_img = PhotoImage(file=relative_to_assets("button_1.png"))
@@ -275,7 +411,7 @@ button_4.bind('<Enter>', on_enter_4)
 button_4.bind('<Leave>', on_leave_4)
 button_4.bind('<Motion>', on_motion_4)
 
-window.bind("<Escape>", quit)
+window.bind("<Escape>", logout)
 icon(window)
 center_window(window)
 window.resizable(False, False)
