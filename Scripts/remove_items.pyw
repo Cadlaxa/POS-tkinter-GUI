@@ -60,6 +60,11 @@ def load_cart_items(tree):
         user_data = load_user_data(user_name)
         if user_data.get('logged', False):
             cname = user_name
+
+        # Ensure user's cart exists in the data
+        if cname not in cart_data['cart']:
+            cart_data['cart'][cname] = {'items': []}
+            
         # Populate treeview with items from cart
         if 'cart' in cart_data and cname in cart_data['cart'] and 'items' in cart_data['cart'][cname]:
             for item in cart_data['cart'][cname]['items']:
@@ -83,13 +88,24 @@ def remove_selected_item(tree):
 
 def update_cart_file(tree):
     user_name = get_username_from_yaml()
-    user_data = load_user_data(user_name)
-    if user_data.get('logged', False):
-        cname = user_name
-    cart_data = {'cart': {cname: {'items': []}}}
+    if user_name is None:
+        messagebox.showinfo("Error", "No user logged in.")
+        return
+
+    # Load existing cart data
+    cart_data = {'cart': {}}
+    if CART_FILE.exists():
+        with open(CART_FILE, 'r', encoding='utf-8') as file:
+            cart_data = yaml.load(file) or cart_data
+
+    # Update cart items for the logged-in user
+    cname = user_name
+    user_cart = cart_data['cart'].get(cname, {'items': []})
+    user_cart['items'] = []
+
     for item in tree.get_children():
         name, product_type, packaging, price, price1, instance, quantity = tree.item(item, 'values')
-        cart_data['cart'][cname]['items'].append({
+        user_cart['items'].append({
             'Name': name,
             'Product Type': product_type,
             'Item Price': price,
@@ -98,6 +114,10 @@ def update_cart_file(tree):
             'Item Instance': instance,
             'Quantity': quantity
         })
+
+    cart_data['cart'][cname] = user_cart
+
+    # Write the updated cart data to the YAML file
     with open(CART_FILE, 'w', encoding='utf-8') as file:
         yaml.dump(cart_data, file)
 

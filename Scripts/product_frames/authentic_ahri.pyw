@@ -117,19 +117,23 @@ def load_cart_items(tree):
         user_data = load_user_data(user_name)
         if user_data.get('logged', False):
             cname = user_name
-
-        # Populate treeview with items from cart
-        if 'cart' in cart_data and cname in cart_data['cart'] and 'items' in cart_data['cart'][cname]:
-            for idx, item in enumerate(cart_data['cart'][cname]['items'], start=1):
-                name = item.get('Name', '')
-                product_type = item.get('Product Type', 'Unknown')
-                packaging = item.get('Packaging', '')
-                quantity = item.get('Item Instance', 1)
-                quantity1 = item.get('Quantity', 1)
-                tree.insert('', 'end', values=(name, product_type, packaging, quantity, quantity1))
+            if 'cart' not in cart_data:
+                cart_data['cart'] = {}
+            if cname not in cart_data['cart']:
+                cart_data['cart'][cname] = {'items': []}
+            
+            # Populate treeview with items from cart
+            if 'items' in cart_data['cart'][cname]:
+                for idx, item in enumerate(cart_data['cart'][cname]['items'], start=1):
+                    name = item.get('Name', '')
+                    product_type = item.get('Product Type', 'Unknown')
+                    packaging = item.get('Packaging', '')
+                    quantity = item.get('Item Instance', 1)
+                    quantity1 = item.get('Quantity', 1)
+                    tree.insert('', 'end', values=(name, product_type, packaging, quantity, quantity1))
     except FileNotFoundError:
         print("Cart file not found.")
-        return
+
 
 def remove_last_item(tree):
     try:
@@ -139,15 +143,20 @@ def remove_last_item(tree):
             user_data = load_user_data(user_name)
             if user_data.get('logged', False):
                 cname = user_name
-        if 'cart' in cart_data and cname in cart_data['cart'] and 'items' in cart_data['cart'][cname]:
-            # Remove the last item from the cart
-            cart_data['cart'][cname]['items'].pop()
+                if 'cart' not in cart_data:
+                    cart_data['cart'] = {}
+                if cname not in cart_data['cart']:
+                    cart_data['cart'][cname] = {'items': []}
+                
+                if 'items' in cart_data['cart'][cname]:
+                    # Remove the last item from the cart
+                    cart_data['cart'][cname]['items'].pop()
 
-            # Update the YAML file
-            write_to_yaml(cart_data)
+                    # Update the YAML file
+                    write_to_yaml(cart_data)
 
-            # Reload the treeview
-            load_cart_items(tree)
+                    # Reload the treeview
+                    load_cart_items(tree)
     except FileNotFoundError:
         print("Cart file not found.")
         return
@@ -160,18 +169,23 @@ def update_last_quantity(change, tree):
             user_data = load_user_data(user_name)
             if user_data.get('logged', False):
                 cname = user_name
-        if 'cart' in cart_data and cname in cart_data['cart'] and 'items' in cart_data['cart'][cname]:
-            last_item = cart_data['cart'][cname]['items'][-1]
-            last_item['Item Instance'] += change
-            if last_item['Item Instance'] < 1:
-                last_item['Item Instance'] = 1  # Prevent quantity from going below 1
-            if last_item['Quantity'] < 1:
-                last_item['Quantity'] = 1
-            # Update the YAML file
-            write_to_yaml(cart_data)
+            if 'cart' not in cart_data:
+                    cart_data['cart'] = {}
+            if cname not in cart_data['cart']:
+                cart_data['cart'][cname] = {'items': []}
+            
+            if 'items' in cart_data['cart'][cname]:
+                last_item = cart_data['cart'][cname]['items'][-1]
+                last_item['Item Instance'] += change
+                if last_item['Item Instance'] < 1:
+                    last_item['Item Instance'] = 1  # Prevent quantity from going below 1
+                if last_item['Quantity'] < 1:
+                    last_item['Quantity'] = 1
+                # Update the YAML file
+                write_to_yaml(cart_data)
 
-            # Reload the treeview
-            load_cart_items(tree)
+                # Reload the treeview
+                load_cart_items(tree)
     except FileNotFoundError:
         print("Cart file not found.")
         return
@@ -206,6 +220,10 @@ def buy_product(is_brand_new):
         if CART_FILE.exists():
             with open(CART_FILE, 'r', encoding='utf-8') as file:
                 cart_data = yaml.load(file)
+
+        # Ensure user's cart exists in the data
+        if cname not in cart_data['cart']:
+            cart_data['cart'][cname] = {'items': []}
 
         # Check if the item already exists in the cart
         item_exists = False
@@ -298,6 +316,10 @@ def buy_product(is_brand_new):
         try:
             with open(CART_FILE, 'r', encoding='utf-8') as file:
                 cart_data = yaml.load(file) or {}
+            # Ensure user's cart exists in the data
+            if cname not in cart_data['cart']:
+                cart_data['cart'][cname] = {'items': []}
+
             items = cart_data.get('cart', {}).get(cname, []).get('items', [])
             for item in items:
                 if item.get('Name') == item_name and item.get('Product Type') == product_type and item.get('Packaging') == packaging_type:
@@ -316,6 +338,10 @@ def buy_product(is_brand_new):
         try:
             with open(CART_FILE, 'r', encoding='utf-8') as file:
                 cart_data = yaml.load(file) or {}
+            # Ensure user's cart exists in the data
+            if cname not in cart_data['cart']:
+                cart_data['cart'][cname] = {'items': []}
+                
             items = cart_data.get('cart', {}).get(cname, []).get('items', [])
             for item in items:
                 if item.get('Name') == item_name and item.get('Product Type') == product_type and item.get('Packaging') == packaging_type:

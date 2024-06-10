@@ -7,7 +7,7 @@ admin:
   contact_number: '1234567890'
   address: address
   house_number: house
-  logged: false
+  logged: true
 cadlaxa:
   username: cadlaxa
   password: password
@@ -37,4 +37,4 @@ Ceslaxa:
   contact_number: '09751368069'
   address: B41 L70 Golden City Subd., Brgy. Salawag, Dasmarinas, Cavite
   house_number: .
-  logged: true
+  logged: false

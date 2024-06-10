@@ -130,6 +130,10 @@ def load_cart_items(tree):
         user_data = load_user(user_name)
         if user_data.get('logged', False):
             cname = user_name
+        
+        # Ensure user's cart exists in the data
+        if cname not in cart_data['cart']:
+            cart_data['cart'][cname] = {'items': []}
 
         # Populate treeview with items from cart
         if 'cart' in cart_data and cname in cart_data['cart'] and 'items' in cart_data['cart'][cname]:
@@ -511,11 +515,25 @@ def confirm_purchase():
                 print_receipt(checkout_tree, change)  # Pass change as an argument
             else:
                 messagebox.showinfo("Purchase Confirmed", "Purchase confirmed. Receipt not saved.")
+
+            user_name = get_username()
+            user_data = load_user(user_name)
+            if user_data.get('logged', False):
+                cname = user_name
             
-            # Clear the YAML file contents
+            # Load existing cart data
+            cart_data = {'cart': {}}
+            if CART_FILE.exists():
+                with open(CART_FILE, 'r', encoding='utf-8') as file:
+                    cart_data = yaml.load(file) or cart_data
+
+            # Clear the cart items for the logged-in user
+            if cname in cart_data['cart']:
+                cart_data['cart'][cname]['items'] = []
+
+            # Write the updated cart data to the YAML file
             try:
                 with open(CART_FILE, 'w', encoding='utf-8') as file:
-                    cart_data = {'cart': {'items': []}}
                     yaml.dump(cart_data, file)
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to clear cart file: {e}")
