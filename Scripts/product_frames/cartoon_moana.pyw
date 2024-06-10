@@ -203,6 +203,128 @@ def buy_product(is_brand_new):
             add_to_cart(quantity, packaging_var.get())
         else:
             remove_last_item(tree)
+    
+    def decrease_quantity_in_cart(tree):
+        selected_item = tree.selection()
+        if not selected_item:  # If no item is selected, select the last item
+            children = tree.get_children()
+            if children:
+                selected_item = children[-1]  # Selects
+            else:
+                return  # If no items are in the tree, do nothing
+        else:
+            selected_item = selected_item[0]
+            tree.selection_set(selected_item)
+        nonlocal quantity
+        item = selected_item
+        values = tree.item(item, 'values')
+        item_name = values[0]
+        product_type = values[1]
+        packaging_type = values[2]
+        quantity = int(values[4])
+        if quantity > 1:
+            new_quantity = quantity - 1
+            tree.set(item, column='Quantity', value=new_quantity)
+            update_cart_file(item_name, product_type, packaging_type, new_quantity)  # Update quantity in cart
+            update_total_price_in_cart(item_name, product_type, packaging_type, new_quantity)  # Update total price in cart
+            quantity_entry.delete(0, tk.END)
+            quantity_entry.insert(0, str(new_quantity))
+        else:
+            tree.delete(item)
+            remove_item_from_cart_file(item_name, product_type)
+            quantity_entry.delete(0, tk.END)
+            quantity_entry.insert(0, "0")
+            reset_quantity()
+    
+    def update_cart_file(item_name, product_type, packaging_type, new_quantity):
+        try:
+            with open(CART_FILE, 'r', encoding='utf-8') as file:
+                cart_data = yaml.load(file) or {}
+            items = cart_data.get('cart', {}).get('items', [])
+            for item in items:
+                if item.get('Name') == item_name and item.get('Product Type') == product_type and item.get('Packaging') == packaging_type:
+                    item['Quantity'] = new_quantity
+                    break
+            with open(CART_FILE, 'w', encoding='utf-8') as file:
+                yaml.dump(cart_data, file)
+        except Exception as e:
+            print(f"Error updating cart file: {e}")
+
+    def update_total_price_in_cart(item_name, product_type, packaging_type, new_quantity):
+        try:
+            with open(CART_FILE, 'r', encoding='utf-8') as file:
+                cart_data = yaml.load(file) or {}
+            items = cart_data.get('cart', {}).get('items', [])
+            for item in items:
+                if item.get('Name') == item_name and item.get('Product Type') == product_type and item.get('Packaging') == packaging_type:
+                    base_price = int(item['Item Price'].replace('₱', '').replace(',', ''))
+                    packaging_price = get_packaging_price(item['Packaging'])
+                    item['Total Price (with or w/o box)'] = f'₱{(base_price + packaging_price) * new_quantity}'
+                    break
+            with open(CART_FILE, 'w', encoding='utf-8') as file:
+                yaml.dump(cart_data, file)
+        except Exception as e:
+            print(f"Error updating total price in cart file: {e}")
+
+    def get_packaging_price(packaging_type):
+        packaging_prices = {
+            'No box': no_box,
+            'Boxed': box_price,
+            'Clampshell': clampshell_price
+        }
+        return packaging_prices.get(packaging_type, 0)
+
+    def remove_item_from_cart_file(item_name, product_type):
+        try:
+            with open(CART_FILE, 'r', encoding='utf-8') as file:
+                cart_data = yaml.load(file) or {}
+            items = cart_data.get('cart', {}).get('items', [])
+            items = [item for item in items if not (item.get('Name') == item_name and item.get('Product Type') == product_type)]
+            cart_data['cart']['items'] = items
+            with open(CART_FILE, 'w', encoding='utf-8') as file:
+                yaml.dump(cart_data, file)
+        except Exception as e:
+            print(f"Error removing item from cart file: {e}")
+    
+    def reset_quantity():
+        nonlocal quantity
+        quantity = 0
+        quantity_entry.delete(0, tk.END)
+        quantity_entry.insert(0, str(quantity))
+    
+    def on_treeview_radio_and_select(event):
+        selected_item = tree.selection()
+        if selected_item:
+            # Items
+            items = selected_item[0]
+            # Entry
+            item = tree.item(selected_item)
+            quantity_entry.delete(0, tk.END)
+            quantity_entry.insert(0, item['values'][4])
+            # RadioButton
+            values = tree.item(items, 'values')
+            item_name = values[0]
+            product_type = values[1]
+            packaging_type = values[2]
+            # Update the radio button based on the item name, product type, and packaging type
+            for item_id in tree.get_children():
+                item_values = tree.item(item_id, 'values')
+                if item_values[0] == item_name:
+                    if product_type == 'Brand New':
+                        if packaging_type == 'No box':
+                            packaging_var.set(0)
+                        elif packaging_type == 'Boxed':
+                            packaging_var.set(1)
+                        elif packaging_type == 'Clampshell':
+                            packaging_var.set(2)
+                    elif product_type == 'Pre-Owned':
+                        if packaging_type == 'No box':
+                            packaging_var.set(0)
+                        elif packaging_type == 'Boxed':
+                            packaging_var.set(1)
+                        elif packaging_type == 'Clampshell':
+                            packaging_var.set(2)
+                    break
 
     def on_packaging_change():
         update_quantity(1)
@@ -238,7 +360,7 @@ def buy_product(is_brand_new):
     plus_button = tk.Button(center_frame, text="  +  ", command=lambda: update_quantity(1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
     plus_button.grid(row=0, column=3, padx=5, pady=5, sticky="we")
 
-    minus_button = tk.Button(center_frame, text="  -  ", command=lambda: update_quantity(-1), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
+    minus_button = tk.Button(center_frame, text="  -  ", command=lambda: decrease_quantity_in_cart(tree), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
     minus_button.grid(row=0, column=2, padx=5, pady=5, sticky="we")
 
     remove_button = tk.Button(center_frame, text="Remove Last Item", command=lambda: update_quantity(-1), bg="#FF6347", font=("Montserrat ExtraBold", 10))
@@ -273,7 +395,8 @@ def buy_product(is_brand_new):
     tree.column('Item Instance', width=80, anchor='c')
     tree.column('Quantity', width=80, anchor='c')
     tree.grid(row=4, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
-    tree.bind('<<TreeviewSelect>>', on_tree_select)
+    # Bind the TreeView selection event
+    tree.bind('<<TreeviewSelect>>', on_treeview_radio_and_select)
 
     load_cart_items(tree)
     icon(quantity_window)
