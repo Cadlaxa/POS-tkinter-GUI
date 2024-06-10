@@ -341,11 +341,15 @@ def buy_product(is_brand_new):
             item = tree.item(selected_item)
             quantity_entry.delete(0, tk.END)
             quantity_entry.insert(0, item['values'][4])
+    
+    def quantity_window_destroy (event):
+        quantity_window.destroy()
 
     quantity = 0
     quantity_window = tk.Toplevel()
     quantity_window.title("Add Quantity")
     quantity_window.grid_columnconfigure(0, weight=1)
+    quantity_window.bind("<Escape>", quantity_window_destroy)
 
     center_frame = ttk.Frame(quantity_window)
     center_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
