@@ -7,7 +7,7 @@ admin:
   contact_number: '1234567890'
   address: address
   house_number: house
-  logged: true
+  logged: false
 cadlaxa:
   username: cadlaxa
   password: password
@@ -18,3 +18,23 @@ cadlaxa:
   address: Blk 41 Lot 70 Phase 6 Dasma 3 Golden City Salawag Cavite
   house_number: near the water tank
   logged: false
+long user test:
+  username: long user test
+  password: pass
+  email: ssd
+  first_name: t
+  last_name: tes
+  contact_number: '1212'
+  address: '12'
+  house_number: '23'
+  logged: false
+Ceslaxa:
+  username: Ceslaxa
+  password: Ces07231968
+  email: ccadag723@gmail.com
+  first_name: Cecilia
+  last_name: Cadag
+  contact_number: '09751368069'
+  address: B41 L70 Golden City Subd., Brgy. Salawag, Dasmarinas, Cavite
+  house_number: .
+  logged: true

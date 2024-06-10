@@ -25,7 +25,6 @@ yaml = YAML()
 title = "Checkout Items"
 tax_value = 0.010
 
-
 #payment_link = 'http://192.168.1.1:5500/payment.html'
 
 # Function to get the local IP address (IP address of the connected Wi-Fi)
@@ -87,9 +86,37 @@ def icon(window):
     img = PhotoImage(file=ICON)
     window.tk.call('wm', 'iconphoto', window._w, img)
 
-
 window = Tk()
 window.title(title)
+
+def get_username():
+    try:
+        yaml = YAML()
+        with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as file:
+            account_data = yaml.load(file) or {}
+        for username, details in account_data.items():
+            if details.get('logged', False):
+                return username
+        return None
+    except FileNotFoundError:
+        messagebox.showinfo("Notice", "Accounts file not found.")
+        return None
+    except Exception as e:
+        messagebox.showinfo("Error", f"Error loading account details: {e}")
+        return None
+
+def load_user(username):
+    try:
+        yaml = YAML()
+        with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as file:
+            user_data = yaml.load(file) or {}
+        return user_data.get(username, {})
+    except FileNotFoundError:
+        print(f"User '{username}' file not found in account details.")
+        return {}
+    except Exception as e:
+        print(f"Error loading user data for '{username}': {e}")
+        return {}
 
 def load_cart_items(tree):
     try:
@@ -99,9 +126,14 @@ def load_cart_items(tree):
         # Clear existing items in treeview
         tree.delete(*tree.get_children())
 
+        user_name = get_username()
+        user_data = load_user(user_name)
+        if user_data.get('logged', False):
+            cname = user_name
+
         # Populate treeview with items from cart
-        if 'cart' in cart_data and 'items' in cart_data['cart']:
-            for item in cart_data['cart']['items']:
+        if 'cart' in cart_data and cname in cart_data['cart'] and 'items' in cart_data['cart'][cname]:
+            for item in cart_data['cart'][cname]['items']:
                 name = item.get('Name', '')
                 ptype = item.get('Product Type', '')
                 price = item.get('Item Price', '')

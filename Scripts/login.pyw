@@ -64,7 +64,7 @@ def login():
             window.destroy()
             categ_script()
             return
-    messagebox.showerror("Login", "Invalid username or email or password.")
+    messagebox.showerror("Login", "Invalid username or email or password,\nCreate an Arti-san Account first before loggin in")
 
 def login_key(event):
     login()

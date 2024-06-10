@@ -9,6 +9,7 @@ OUTPUT_PATH = P().parent
 ACCOUNTS_DIR = P('./Accounts')
 ACCOUNTS_DIR.mkdir(exist_ok=True)
 CART_FILE = ACCOUNTS_DIR / 'cart.yaml'
+USERS_FILE = ACCOUNTS_DIR / 'users.yaml'
 ICON = P('./Assets/logour.png')
 yaml = YAML()
 title = "Remove Item/s"
@@ -20,15 +21,48 @@ def icon(window):
 window = Tk()
 window.title(title)
 
+def get_username_from_yaml():
+    try:
+        yaml = YAML()
+        with open(USERS_FILE, 'r', encoding='utf-8') as file:
+            account_data = yaml.load(file) or {}
+        for username, details in account_data.items():
+            if details.get('logged', False):
+                return username
+        return None
+    except FileNotFoundError:
+        messagebox.showinfo("Notice", "Accounts file not found.")
+        return None
+    except Exception as e:
+        messagebox.showinfo("Error", f"Error loading account details: {e}")
+        return None
+
+def load_user_data(username):
+    try:
+        yaml = YAML()
+        with open(USERS_FILE, 'r', encoding='utf-8') as file:
+            user_data = yaml.load(file) or {}
+        return user_data.get(username, {})
+    except FileNotFoundError:
+        print(f"User '{username}' file not found in account details.")
+        return {}
+    except Exception as e:
+        print(f"Error loading user data for '{username}': {e}")
+        return {}
+
 def load_cart_items(tree):
     try:
         with open(CART_FILE, 'r', encoding='utf-8') as file:
             cart_data = yaml.load(file)
         # Clear existing items in treeview
         tree.delete(*tree.get_children())
+        user_name = get_username_from_yaml()
+        user_data = load_user_data(user_name)
+        if user_data.get('logged', False):
+            cname = user_name
         # Populate treeview with items from cart
-        if 'cart' in cart_data and 'items' in cart_data['cart']:
-            for item in cart_data['cart']['items']:
+        if 'cart' in cart_data and cname in cart_data['cart'] and 'items' in cart_data['cart'][cname]:
+            for item in cart_data['cart'][cname]['items']:
                 name = item.get('Name', '')
                 product_type = item.get('Product Type', '')
                 price = item.get('Item Price', '')
@@ -48,10 +82,14 @@ def remove_selected_item(tree):
         update_cart_file(tree)
 
 def update_cart_file(tree):
-    cart_data = {'cart': {'items': []}}
+    user_name = get_username_from_yaml()
+    user_data = load_user_data(user_name)
+    if user_data.get('logged', False):
+        cname = user_name
+    cart_data = {'cart': {cname: {'items': []}}}
     for item in tree.get_children():
         name, product_type, packaging, price, price1, instance, quantity = tree.item(item, 'values')
-        cart_data['cart']['items'].append({
+        cart_data['cart'][cname]['items'].append({
             'Name': name,
             'Product Type': product_type,
             'Item Price': price,

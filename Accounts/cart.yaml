@@ -1,2 +1,17 @@
 cart:
-  items: []
+  Ceslaxa:
+    items:
+    - Name: 'League of Legends: Ahri-Star Guardian'
+      Product Type: Brand New
+      Item Price: ₱25450
+      Packaging: Boxed
+      Total Price (with or w/o box): ₱25650
+      Item Instance: 1
+      Quantity: 1
+    - Name: 'League of Legends: Ahri-Star Guardian'
+      Product Type: Brand New
+      Item Price: ₱25450
+      Packaging: Clampshell
+      Total Price (with or w/o box): ₱25750
+      Item Instance: 1
+      Quantity: 1

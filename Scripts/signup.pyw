@@ -68,6 +68,14 @@ def create_account():
     if not new_username or not new_password or not new_email or not new_fname or not new_lname or not new_cont or not new_address or not new_house:
         messagebox.showerror("Signup", "All fields are required.")
         return
+    # Check password length
+    if len(new_password) < 8 or len(new_password) > 15:
+        password.config(fg='red')
+        messagebox.showerror("Error", "Password must be highter than 8 and lower than 15 characters.")
+        return
+    else:
+        password.config(fg='black')
+        #password_length_label.config(text="")
     if new_password != confirm_password:
         messagebox.showerror("Signup", "Passwords do not match.")
     else:

@@ -14,6 +14,7 @@ ASSETS_PATH = OUTPUT_PATH / P(r"Assets/products/authentic_ahri")
 ACCOUNTS_DIR = P('./Accounts')
 ACCOUNTS_DIR.mkdir(exist_ok=True)
 CART_FILE = ACCOUNTS_DIR / 'cart.yaml'
+USERS_FILE = ACCOUNTS_DIR / 'users.yaml'
 ICON = P('./Assets/logour.png')
 yaml = YAML()
 
@@ -53,6 +54,35 @@ def load_and_resize_image(path, scale_factor):
     return ImageTk.PhotoImage(resized_image)
 scale_factor = 0.97
 
+def get_username_from_yaml():
+    try:
+        yaml = YAML()
+        with open(USERS_FILE, 'r', encoding='utf-8') as file:
+            account_data = yaml.load(file) or {}
+        for username, details in account_data.items():
+            if details.get('logged', False):
+                return username
+        return None
+    except FileNotFoundError:
+        messagebox.showinfo("Notice", "Accounts file not found.")
+        return None
+    except Exception as e:
+        messagebox.showinfo("Error", f"Error loading account details: {e}")
+        return None
+
+def load_user_data(username):
+    try:
+        yaml = YAML()
+        with open(USERS_FILE, 'r', encoding='utf-8') as file:
+            user_data = yaml.load(file) or {}
+        return user_data.get(username, {})
+    except FileNotFoundError:
+        print(f"User '{username}' file not found in account details.")
+        return {}
+    except Exception as e:
+        print(f"Error loading user data for '{username}': {e}")
+        return {}
+
 # Function to write data to a YAML file
 def write_to_yaml(data):
     yaml = YAML()
@@ -82,10 +112,15 @@ def load_cart_items(tree):
 
         # Clear existing items in treeview
         tree.delete(*tree.get_children())
+        
+        user_name = get_username_from_yaml()
+        user_data = load_user_data(user_name)
+        if user_data.get('logged', False):
+            cname = user_name
 
         # Populate treeview with items from cart
-        if 'cart' in cart_data and 'items' in cart_data['cart']:
-            for idx, item in enumerate(cart_data['cart']['items'], start=1):
+        if 'cart' in cart_data and cname in cart_data['cart'] and 'items' in cart_data['cart'][cname]:
+            for idx, item in enumerate(cart_data['cart'][cname]['items'], start=1):
                 name = item.get('Name', '')
                 product_type = item.get('Product Type', 'Unknown')
                 packaging = item.get('Packaging', '')
@@ -100,10 +135,13 @@ def remove_last_item(tree):
     try:
         with open(CART_FILE, 'r', encoding='utf-8') as file:
             cart_data = yaml.load(file)
-
-        if 'cart' in cart_data and 'items' in cart_data['cart'] and cart_data['cart']['items']:
+            user_name = get_username_from_yaml()
+            user_data = load_user_data(user_name)
+            if user_data.get('logged', False):
+                cname = user_name
+        if 'cart' in cart_data and cname in cart_data['cart'] and 'items' in cart_data['cart'][cname]:
             # Remove the last item from the cart
-            cart_data['cart']['items'].pop()
+            cart_data['cart'][cname]['items'].pop()
 
             # Update the YAML file
             write_to_yaml(cart_data)
@@ -118,9 +156,12 @@ def update_last_quantity(change, tree):
     try:
         with open(CART_FILE, 'r', encoding='utf-8') as file:
             cart_data = yaml.load(file)
-
-        if 'cart' in cart_data and 'items' in cart_data['cart'] and cart_data['cart']['items']:
-            last_item = cart_data['cart']['items'][-1]
+            user_name = get_username_from_yaml()
+            user_data = load_user_data(user_name)
+            if user_data.get('logged', False):
+                cname = user_name
+        if 'cart' in cart_data and cname in cart_data['cart'] and 'items' in cart_data['cart'][cname]:
+            last_item = cart_data['cart'][cname]['items'][-1]
             last_item['Item Instance'] += change
             if last_item['Item Instance'] < 1:
                 last_item['Item Instance'] = 1  # Prevent quantity from going below 1
@@ -157,14 +198,18 @@ def buy_product(is_brand_new):
         elif packaging_type == 2:  # Clampshell
             packaging_price = clampshell_price
 
-        cart_data = {'cart': {'items': []}}
+        user_name = get_username_from_yaml()
+        user_data = load_user_data(user_name)
+        if user_data.get('logged', False):
+            cname = user_name
+        cart_data = {'cart': {cname: {'items': []}}}
         if CART_FILE.exists():
             with open(CART_FILE, 'r', encoding='utf-8') as file:
                 cart_data = yaml.load(file)
 
         # Check if the item already exists in the cart
         item_exists = False
-        for item in cart_data['cart']['items']:
+        for item in cart_data['cart'][cname]['items']:
             if item['Name'] == Product and item['Product Type'] == product_type and item['Packaging'] == packaging_options[packaging_type]:
                 # Item already exists, update its quantity
                 item['Quantity'] += 1
@@ -175,14 +220,14 @@ def buy_product(is_brand_new):
             # Item doesn't exist, initialize quantity_add to 1
             quantity_add = 1
             # Check if the item already exists in the cart and update quantity_add accordingly
-            for item in cart_data['cart']['items']:
+            for item in cart_data['cart'][cname]['items']:
                 if item['Name'] == Product and item['Product Type'] == product_type and item['Packaging'] == packaging_options[packaging_type]:
                     quantity_add = item['Quantity'] + 1
                     break
             total_price = (base_price + packaging_price) * quantity_add
             
             # Append the item to the cart with the updated quantity_add
-            cart_data['cart']['items'].append({
+            cart_data['cart'][cname]['items'].append({
                 'Name': Product,
                 'Product Type': product_type,
                 'Item Price': f'₱{base_price}',
@@ -193,7 +238,7 @@ def buy_product(is_brand_new):
             })
         else:
             # Item exists, update its quantity and total price
-            for item in cart_data['cart']['items']:
+            for item in cart_data['cart'][cname]['items']:
                 if item['Name'] == Product and item['Product Type'] == product_type and item['Packaging'] == packaging_options[packaging_type]:
                     item['Total Price (with or w/o box)'] = f'₱{(base_price + packaging_price) * item["Quantity"]}'
                     break
@@ -246,10 +291,14 @@ def buy_product(is_brand_new):
             reset_quantity()
     
     def update_cart_file(item_name, product_type, packaging_type, new_quantity):
+        user_name = get_username_from_yaml()
+        user_data = load_user_data(user_name)
+        if user_data.get('logged', False):
+            cname = user_name
         try:
             with open(CART_FILE, 'r', encoding='utf-8') as file:
                 cart_data = yaml.load(file) or {}
-            items = cart_data.get('cart', {}).get('items', [])
+            items = cart_data.get('cart', {}).get(cname, []).get('items', [])
             for item in items:
                 if item.get('Name') == item_name and item.get('Product Type') == product_type and item.get('Packaging') == packaging_type:
                     item['Quantity'] = new_quantity
@@ -260,10 +309,14 @@ def buy_product(is_brand_new):
             print(f"Error updating cart file: {e}")
 
     def update_total_price_in_cart(item_name, product_type, packaging_type, new_quantity):
+        user_name = get_username_from_yaml()
+        user_data = load_user_data(user_name)
+        if user_data.get('logged', False):
+            cname = user_name
         try:
             with open(CART_FILE, 'r', encoding='utf-8') as file:
                 cart_data = yaml.load(file) or {}
-            items = cart_data.get('cart', {}).get('items', [])
+            items = cart_data.get('cart', {}).get(cname, []).get('items', [])
             for item in items:
                 if item.get('Name') == item_name and item.get('Product Type') == product_type and item.get('Packaging') == packaging_type:
                     base_price = int(item['Item Price'].replace('₱', '').replace(',', ''))
@@ -284,12 +337,16 @@ def buy_product(is_brand_new):
         return packaging_prices.get(packaging_type, 0)
 
     def remove_item_from_cart_file(item_name, product_type):
+        user_name = get_username_from_yaml()
+        user_data = load_user_data(user_name)
+        if user_data.get('logged', False):
+            cname = user_name
         try:
             with open(CART_FILE, 'r', encoding='utf-8') as file:
                 cart_data = yaml.load(file) or {}
-            items = cart_data.get('cart', {}).get('items', [])
+            items = cart_data.get('cart', {}).get(cname, []).get('items', [])
             items = [item for item in items if not (item.get('Name') == item_name and item.get('Product Type') == product_type)]
-            cart_data['cart']['items'] = items
+            cart_data['cart'][cname]['items'] = items
             with open(CART_FILE, 'w', encoding='utf-8') as file:
                 yaml.dump(cart_data, file)
         except Exception as e:
