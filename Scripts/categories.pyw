@@ -77,12 +77,12 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
         # Loop through items in the cart and count the total quantity
         if 'cart' in cart_data and 'items' in cart_data['cart']:
             for item in cart_data['cart']['items']:
-                quantity = item.get('Quantity', 0)  # Assuming 'quantity' is the key
+                quantity = item.get('Item Instance', 0)
                 total_quantity += int(quantity)
 
         # Update the cart label text with the current total items and quantity
         canvas.itemconfig(cart_label, text=f"Items on cart:  {total_quantity}")
-        # Schedule the function to run again after 1 seconds
+        # Schedule the function to run again after 1 second
         window.after(1000, count_items_in_cart)
     except FileNotFoundError:
         # If cart file is not found or empty, schedule the function to run again after 1 seconds
