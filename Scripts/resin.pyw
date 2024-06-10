@@ -15,6 +15,13 @@ yaml = YAML()
 type = "Class A (Resin) Figures"
 textheader = "Resin Figures"
 
+def center_window(window):
+    window.update_idletasks()
+    width = window.winfo_width()
+    height = window.winfo_height()
+    x = (window.winfo_screenwidth() // 2) - (width // 2)
+    y = (window.winfo_screenheight() // 2) - (height // 2) - 30
+    window.geometry(f'{width}x{height}+{x}+{y}')
 
 def relative_to_assets(path: str) -> P:
     return ASSETS_PATH / P(path)
@@ -187,5 +194,6 @@ canvas.create_text(460.0, 36.0, anchor="nw",
 
 window.bind("<Escape>", quit)
 icon(window)
+center_window(window)
 window.resizable(False, False)
 window.mainloop()

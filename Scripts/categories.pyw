@@ -13,6 +13,14 @@ USERS_FILE = ACCOUNTS_DIR / 'users.yaml'
 ICON = P('./Assets/logour.png')
 yaml = YAML()
 
+def center_window(window):
+    window.update_idletasks()
+    width = window.winfo_width()
+    height = window.winfo_height()
+    x = (window.winfo_screenwidth() // 2) - (width // 2)
+    y = (window.winfo_screenheight() // 2) - (height // 2) - 30
+    window.geometry(f'{width}x{height}+{x}+{y}')
+
 # Function to read user data from the YAML file
 def read_users():
     if USERS_FILE.exists():
@@ -269,5 +277,6 @@ button_4.bind('<Motion>', on_motion_4)
 
 window.bind("<Escape>", quit)
 icon(window)
+center_window(window)
 window.resizable(False, False)
 window.mainloop()

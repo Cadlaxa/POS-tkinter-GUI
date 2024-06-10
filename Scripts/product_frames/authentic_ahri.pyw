@@ -27,6 +27,14 @@ no_box = -200
 box_price = 200
 clampshell_price = 300
 
+def center_window(window):
+    window.update_idletasks()
+    width = window.winfo_width()
+    height = window.winfo_height()
+    x = (window.winfo_screenwidth() // 2) - (width // 2)
+    y = (window.winfo_screenheight() // 2) - (height // 2) - 30
+    window.geometry(f'{width}x{height}+{x}+{y}')
+
 def relative_to_assets(path: str) -> P:
     return ASSETS_PATH / P(path)
 
@@ -502,5 +510,6 @@ image_8 = canvas.create_image(919.0, 363.0, image=image_image_8)
 
 window.bind("<Escape>", quit)
 icon(window)
+center_window(window)
 window.resizable(False, False)
 window.mainloop()
