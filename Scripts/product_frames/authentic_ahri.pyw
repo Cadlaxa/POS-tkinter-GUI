@@ -218,7 +218,7 @@ def buy_product(is_brand_new):
         if selected_item:
             item = tree.item(selected_item)
             quantity_entry.delete(0, tk.END)
-            quantity_entry.insert(0, item['values'][2])
+            quantity_entry.insert(0, item['values'][4])
 
     quantity = 0
     quantity_window = tk.Toplevel()

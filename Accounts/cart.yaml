@@ -1,2 +1,23 @@
 cart:
-  items: []
+  items:
+  - Name: 'Fate Grand Order: Caster/Altria Caster (3rd Ascension)'
+    Product Type: Brand New
+    Item Price: ₱24999
+    Packaging: Boxed
+    Total Price (with or w/o box): ₱25199
+    Item Instance: 1
+    Quantity: 1
+  - Name: 'Chainsaw Man: Denji'
+    Product Type: Pre-Owned
+    Item Price: ₱17999
+    Packaging: No box
+    Total Price (with or w/o box): ₱17799
+    Item Instance: 1
+    Quantity: 1
+  - Name: 'League of Legends: Ahri-Star Guardian'
+    Product Type: Brand New
+    Item Price: ₱25450
+    Packaging: Clampshell
+    Total Price (with or w/o box): ₱77250
+    Item Instance: 1
+    Quantity: 3
