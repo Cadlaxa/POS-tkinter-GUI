@@ -20,8 +20,8 @@ pip install qrcode
 
 
 :: Define the source and intermediate directories
-set "source_font_dir=%cd%POS-tkinter-GUI\Assets\Montserrat static fonts"
-set "intermediate_dir=%cd%POS-tkinter-GUI\Assets\Montserrat static fonts"
+set "source_font_dir=%cd%\POS-tkinter-GUI\Assets\Montserrat static fonts"
+set "intermediate_dir=%cd%\POS-tkinter-GUI\Assets\Montserrat static fonts"
 set "target_font_dir=C:\Windows\Fonts"
 
 :: Install TTF fonts
