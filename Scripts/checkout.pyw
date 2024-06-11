@@ -167,6 +167,24 @@ checkout_tree.column('Total Price', width=120, anchor='c')
 checkout_tree.column('Packaging', width=80, anchor='c')
 checkout_tree.column('Quantity', width=60, anchor='c')
 checkout_tree.pack()
+checkout_tree.bind("<<TreeviewSelect>>", lambda event: update_total_price(checkout_tree))
+
+def on_treeview_click(event):
+    item = checkout_tree.identify_row(event.y)
+    if item:
+        if item in checkout_tree.selection():
+            checkout_tree.selection_remove(item)
+        else:
+            checkout_tree.selection_add(item)
+        update_total_price(checkout_tree)
+    return "break"  # Prevent the default behavior
+
+def on_right_click(event):
+    checkout_tree.selection_remove(checkout_tree.selection())
+    update_total_price(checkout_tree)
+
+checkout_tree.bind("<Button-1>", on_treeview_click) # left click to select, click the item again and it will deselect
+checkout_tree.bind("<Button-3>", on_right_click) # right click to deselect all
 
 # Payment entry
 payment_label = ttk.Label(window, text="Enter payment amount:", font=("Montserrat SemiBold", 10))
@@ -180,7 +198,7 @@ total_price_label.pack()
 
 def update_total_price(tree):
     total_price = 0.0
-    for item in tree.get_children():
+    for item in checkout_tree.selection():  # Only iterate through selected items
         total_price_str = tree.item(item, 'values')[4]  # Extract total price string
         total_price_str = total_price_str.replace('₱', '').replace(',', '')
         total_price += float(total_price_str)
@@ -300,9 +318,9 @@ def print_receipt(tree, change):
         # Add item details to the receipt text
         total_package_cost = 0  # Initialize total packaging cost
 
-        for item in tree.get_children():
-            values = tree.item(item, 'values')
-            if len(values) == 6:  # Ensure the correct number of values is obtained
+        for item in checkout_tree.selection():  # Only iterate through selected items
+            values = checkout_tree.item(item, 'values')
+            if len(values) == 6 in checkout_tree.selection():  # Ensure the correct number of values is obtained
                 name, ptype, price, packaging, total_price, quantity = values  # Unpack the values
 
                 # Adjust packaging cost based on packaging type
@@ -333,7 +351,7 @@ def print_receipt(tree, change):
         total_package = 0.0
         
         # Calculate subtotal
-        for item in tree.get_children():
+        for item in checkout_tree.selection():  # Only iterate through selected items
             total_price_str = tree.item(item, 'values')[4]
             # Convert total price to float, excluding packaging cost
             subtotal += float(total_price_str.replace('₱', '').replace(',', '')) - total_package_cost
@@ -529,7 +547,13 @@ def confirm_purchase():
 
             # Clear the cart items for the logged-in user
             if cname in cart_data['cart']:
-                cart_data['cart'][cname]['items'] = []
+                cart_data = cart_data['cart'][cname]
+            
+            # Get the selected items from the checkout tree
+            selected_items = checkout_tree.selection()
+
+            # Remove selected items from the cart
+            cart_data['items'] = [item for item in cart_data['items'] if item not in selected_items]
 
             # Write the updated cart data to the YAML file
             try:
