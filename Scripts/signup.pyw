@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, ttk
 from ruamel.yaml import YAML
 import subprocess
-
+import os
 
 OUTPUT_PATH = P().parent
 ASSETS_PATH = OUTPUT_PATH / P(r"Assets/signup_frame")
@@ -53,6 +53,37 @@ def write_users(users):
     with open(USERS_FILE, 'w') as file:
         yaml.dump(users, file)
 
+# Function to validate and insert data
+def validate_and_insert():
+    
+    # Load login data from YAML file
+    with open('Accounts/login_data.yaml', 'r') as file:
+        login_data = yaml.load(file)
+    
+    # Strip any leading/trailing whitespace
+    username_or_email = login_data.get('username_or_email', '')
+    password1 = login_data.get('password', '')
+    
+    if '@' in username_or_email or '.com' in username_or_email:
+        # If the input contains '@' or '.com', treat it as email
+        email.delete(0, tk.END)
+        email.insert(0, username_or_email)
+    else:
+        # Otherwise, treat it as username
+        nname.delete(0, tk.END)
+        nname.insert(0, username_or_email)
+
+    # Insert password into password entry widget
+    password.delete(0, tk.END)
+    password.insert(0, password1)
+
+def delete_yaml_file(file_path):
+    try:
+        os.remove(file_path)
+        print(f"The file {file_path} has been successfully deleted.")
+    except OSError as e:
+        print(f"Error: {file_path} : {e.strerror}")
+
 def create_account():
     new_lname = lname.get()
     new_fname = fname.get()
@@ -95,6 +126,7 @@ def create_account():
             }
             write_users(users)
             messagebox.showinfo("Signup", "Account created successfully!")
+            delete_yaml_file("Accounts/login_data.yaml")
             window.destroy()
 
 def create_account_key(event):
@@ -240,7 +272,7 @@ def button_1_leave(e):
 button_1.bind('<Enter>', button_1_hover)
 button_1.bind('<Leave>', button_1_leave)
 window.bind("<Return>", create_account_key)
-
+validate_and_insert()
 window.bind("<Escape>", quit)
 icon(window)
 center_window(window)

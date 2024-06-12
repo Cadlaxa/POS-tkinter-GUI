@@ -37,6 +37,13 @@ def read_users():
 def relative_to_assets(path: str) -> P:
     return ASSETS_PATH / P(path)
 
+def get_login_data():
+    username_or_email_from_login = entry_1.get()
+    password_from_login = entry_2.get()
+    data = {'username_or_email': username_or_email_from_login, 'password': password_from_login}
+    with open('Accounts/login_data.yaml', 'w') as file:
+        yaml.dump(data, file)
+
 def login():
     global logged_in_user
     username_or_email = entry_1.get()  # Get the entered username or email
@@ -156,6 +163,7 @@ def button_2_hover(e):
     button_2.config(
         image=signup_hover
     )
+    get_login_data()
 def button_2_leave(e):
     button_2.config(
         image=signup_b
