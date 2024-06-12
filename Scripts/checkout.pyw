@@ -413,14 +413,38 @@ def print_receipt(tree, change):
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred while saving the receipt: {e}")
 
+def format_with_commas(event):
+    # Get the current value of the entry field
+    value = payment_entry.get().replace(",", "")
+    
+    if value.isdigit():
+        formatted_value = "{:,}".format(int(value))
+        # Update the entry field with the formatted value
+        payment_entry.delete(0, tk.END)
+        payment_entry.insert(0, formatted_value)
+
+payment_entry.bind("<KeyRelease>", format_with_commas)
+
 def add_amount():
     try:
-        amount_to_add = float(payment_entry.get())
+        # Get the amount to add and remove any commas
+        amount_to_add_str = payment_entry.get().replace(",", "")
+        amount_to_add = float(amount_to_add_str)
+
         if amount_to_add >= 0:
-            current_amount = float(amount_paid_label.cget("text").replace("Amount Paid: ₱", "").replace(",", ""))
+            # Get the current amount paid and remove any commas
+            current_amount_str = amount_paid_label.cget("text").replace("Amount Paid: ₱", "").replace(",", "")
+            current_amount = float(current_amount_str)
+
+            # Calculate the updated amount
             updated_amount = current_amount + amount_to_add
+
+            # Update the label with the new amount, formatted with commas
             amount_paid_label.config(text=f"Amount Paid: ₱{updated_amount:,.2f}")
-            update_payment_status(updated_amount, float(total_price_label.cget("text").replace("Total Price (Tax Included): ₱", "").replace(",", "")))
+
+            # Update the payment status
+            total_price_str = total_price_label.cget("text").replace("Total Price (Tax Included): ₱", "").replace(",", "")
+            update_payment_status(updated_amount, float(total_price_str))
         else:
             raise ValueError("Negative amount not allowed.")
     except ValueError:
