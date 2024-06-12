@@ -495,6 +495,7 @@ def buy_product(is_brand_new):
 
     load_cart_items(tree)
     icon(quantity_window)
+    center_window(quantity_window)
 
 window = Tk()
 window.geometry("1148x622")

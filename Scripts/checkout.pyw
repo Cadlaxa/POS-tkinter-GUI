@@ -25,6 +25,14 @@ yaml = YAML()
 title = "Checkout Items"
 tax_value = 0.01
 
+def center_window(window):
+    window.update_idletasks()
+    width = window.winfo_width()
+    height = window.winfo_height()
+    x = (window.winfo_screenwidth() // 2) - (width // 2)
+    y = (window.winfo_screenheight() // 2) - (height // 2) - 30
+    window.geometry(f'{width}x{height}+{x}+{y}')
+
 #payment_link = 'http://192.168.1.1:5500/payment.html'
 
 # Function to get the local IP address (IP address of the connected Wi-Fi)
@@ -556,6 +564,7 @@ def display_qr_code(link):
     qr_label.image = qr_image_tk
     qr_label.pack()
     icon(qr_window)
+    qr_window.resizable(False, False)
 
     # Close the QR window when the user closes it
     qr_window.protocol("WM_DELETE_WINDOW", qr_window.destroy)
@@ -650,6 +659,7 @@ receipt_button = Button(button_frame, text="Save Receipt", command=lambda: print
 receipt_button.pack(side=tk.LEFT, padx=10)
 receipt_button.config(state=tk.DISABLED)  # Disable save receipt button initially
 
+center_window(window)
 window.bind("<Escape>", quit)
 icon(window)
 window.mainloop()

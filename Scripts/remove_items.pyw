@@ -21,6 +21,14 @@ def icon(window):
 window = Tk()
 window.title(title)
 
+def center_window(window):
+    window.update_idletasks()
+    width = window.winfo_width()
+    height = window.winfo_height()
+    x = (window.winfo_screenwidth() // 2) - (width // 2)
+    y = (window.winfo_screenheight() // 2) - (height // 2) - 30
+    window.geometry(f'{width}x{height}+{x}+{y}')
+
 def get_username_from_yaml():
     try:
         yaml = YAML()
@@ -145,7 +153,7 @@ def remove_item_window():
     remove_button = Button(window, text="Remove Item/s", bg="#31F5C2", font=("Montserrat ExtraBold", 10), command=lambda: remove_selected_item(remove_tree))
     remove_button.pack(fill='x')
 remove_item_window()
-
+center_window(window)
 window.bind("<Escape>", quit)
 icon(window)
 window.mainloop()
