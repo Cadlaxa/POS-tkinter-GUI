@@ -6,15 +6,15 @@ cart:
       Item Price: ₱25450
       Packaging: Clampshell
       Total Price (with or w/o box): ₱25750
-      Item Instance: '1'
-      Quantity: '1'
+      Item Instance: 1
+      Quantity: 1
     - Name: 'League of Legends: Ahri-Star Guardian'
       Product Type: Brand New
       Item Price: ₱25450
       Packaging: Boxed
       Total Price (with or w/o box): ₱25650
-      Item Instance: '1'
-      Quantity: '1'
+      Item Instance: 1
+      Quantity: 1
     - Name: 'Fate Grand Order: Caster/Altria Caster (3rd Ascension)'
       Product Type: Pre-Owned
       Item Price: ₱15599
@@ -38,24 +38,17 @@ cart:
       Quantity: 1
   admin:
     items:
-    - Name: Haikyu!! - Tobio Kageyama
-      Product Type: Brand New
-      Item Price: ₱2984
-      Packaging: Boxed
-      Total Price (with or w/o box): ₱3184
-      Item Instance: 1
-      Quantity: 1
-    - Name: Haikyu!! - Tobio Kageyama
-      Product Type: Brand New
-      Item Price: ₱2984
-      Packaging: Clampshell
-      Total Price (with or w/o box): ₱3284
+    - Name: 'League of Legends: Ahri-Star Guardian'
+      Product Type: Pre-Owned
+      Item Price: ₱15999
+      Packaging: No box
+      Total Price (with or w/o box): ₱15799
       Item Instance: 1
       Quantity: 1
     - Name: 'One Punch Man: Saitama'
       Product Type: Brand New
       Item Price: ₱15000
       Packaging: Clampshell
-      Total Price (with or w/o box): ₱30600
+      Total Price (with or w/o box): ₱15300
       Item Instance: 1
-      Quantity: 2
+      Quantity: 1

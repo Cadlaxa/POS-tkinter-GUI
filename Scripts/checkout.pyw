@@ -23,7 +23,7 @@ ACCOUNTS_FILE = ACCOUNTS_DIR / 'users.yaml'
 ICON = P('./Assets/logour.png')
 yaml = YAML()
 title = "Checkout Items"
-tax_value = 0.010
+tax_value = 0.01
 
 #payment_link = 'http://192.168.1.1:5500/payment.html'
 
@@ -199,9 +199,16 @@ total_price_label.pack()
 def update_total_price(tree):
     total_price = 0.0
     for item in checkout_tree.selection():  # Only iterate through selected items
-        total_price_str = tree.item(item, 'values')[4]  # Extract total price string
-        total_price_str = total_price_str.replace('₱', '').replace(',', '')
-        total_price += float(total_price_str)
+        values = tree.item(item, 'values')
+        if len(values) == 6:
+            price_str = values[4].replace('₱', '').replace(',', '')
+            quantity_str = values[5]  # Extract quantity string
+            try:
+                price = float(price_str)
+                quantity = int(quantity_str)
+                total_price += price * quantity  # Calculate total price
+            except ValueError:
+                continue
     # Calculate tax
     tax = total_price * tax_value
     # Add tax to the total price
@@ -318,9 +325,9 @@ def print_receipt(tree, change):
         # Add item details to the receipt text
         total_package_cost = 0  # Initialize total packaging cost
 
-        for item in checkout_tree.selection():  # Only iterate through selected items
-            values = checkout_tree.item(item, 'values')
-            if len(values) == 6 in checkout_tree.selection():  # Ensure the correct number of values is obtained
+        for item in tree.selection():  # Only iterate through selected items
+            values = tree.item(item, 'values')
+            if len(values) == 6:  # Ensure the correct number of values is obtained
                 name, ptype, price, packaging, total_price, quantity = values  # Unpack the values
 
                 # Adjust packaging cost based on packaging type
@@ -333,9 +340,12 @@ def print_receipt(tree, change):
                 else:
                     packaging_cost = 0  # Default value if packaging type is not recognized
 
-                # Accumulate packaging cost for each item type
-                total_package_cost += packaging_cost * int(quantity)
-                print(f"Total Packaging Cost: ₱{total_package_cost}")
+                try:
+                    quantity = int(quantity)
+                    # Accumulate packaging cost for each item type
+                    total_package_cost += packaging_cost * quantity
+                except ValueError:
+                    continue
 
                 # Add item details to receipt text
                 receipt_text += f"""
@@ -343,7 +353,7 @@ def print_receipt(tree, change):
     Product Type: {ptype}
     Quantity: {quantity}
     Packaging Type: {packaging}
-    Price: {price}
+    Price of Item: {price}
     """
         # Calculate subtotal, packaging cost, tax, and total
         # Initialize variables
@@ -351,14 +361,24 @@ def print_receipt(tree, change):
         total_package = 0.0
         
         # Calculate subtotal
-        for item in checkout_tree.selection():  # Only iterate through selected items
-            total_price_str = tree.item(item, 'values')[4]
-            # Convert total price to float, excluding packaging cost
-            subtotal += float(total_price_str.replace('₱', '').replace(',', '')) - total_package_cost
-        
-        total_package = total_package_cost * len(tree.get_children())
+        for item in tree.selection():
+            values = tree.item(item, 'values')
+            if len(values) == 6:
+                total_price_str = values[4]
+                quantity_str = values[5]
+
+                # Convert total price and quantity to float and int respectively
+                try:
+                    total_price = float(total_price_str.replace('₱', '').replace(',', ''))
+                    quantity = int(quantity_str)
+                    item_total_price = total_price * quantity
+                    subtotal += item_total_price
+                except ValueError:
+                    continue
+
+        total_package = total_package_cost
         tax = (subtotal + total_package) * tax_value
-        total = subtotal + total_package + tax
+        total = subtotal + tax
 
         # Add subtotal, packaging cost, tax, change, and total to the receipt text
         receipt_text += f"""
@@ -533,32 +553,44 @@ def confirm_purchase():
                 print_receipt(checkout_tree, change)  # Pass change as an argument
             else:
                 messagebox.showinfo("Purchase Confirmed", "Purchase confirmed. Receipt not saved.")
-
-            user_name = get_username()
-            user_data = load_user(user_name)
-            if user_data.get('logged', False):
-                cname = user_name
             
-            # Load existing cart data
-            cart_data = {'cart': {}}
-            if CART_FILE.exists():
-                with open(CART_FILE, 'r', encoding='utf-8') as file:
-                    cart_data = yaml.load(file) or cart_data
-
-            # Clear the cart items for the logged-in user
-            if cname in cart_data['cart']:
-                cart_data = cart_data['cart'][cname]
-            
-            # Get the selected items from the checkout tree
-            selected_items = checkout_tree.selection()
-
-            # Remove selected items from the cart
-            cart_data['items'] = [item for item in cart_data['items'] if item not in selected_items]
-
-            # Write the updated cart data to the YAML file
+            # Clear the YAML file contents
             try:
-                with open(CART_FILE, 'w', encoding='utf-8') as file:
-                    yaml.dump(cart_data, file)
+                user_name = get_username()
+                user_data = load_user(user_name)
+                if user_data.get('logged', False):
+                    cname = user_name
+
+                selected_item = checkout_tree.selection()
+                if selected_item:
+                    item = checkout_tree.item(selected_item[0])
+                    item_values = item['values']
+                    item_name = item_values[0]
+                    product_type = item_values[1]
+                    packaging_type = item_values[3]
+
+                    # Load the YAML file contents
+                    try:
+                        yaml = YAML()
+                        with open(CART_FILE, 'r', encoding='utf-8') as file:
+                            cart_data = yaml.load(file) or {'cart': {}}
+
+                        if cname in cart_data['cart']:
+                            items = cart_data['cart'][cname]['items']
+                            items_to_remove = [i for i in items if i['Name'] == item_name and i['Product Type'] == product_type and i['Packaging'] == packaging_type]
+                            for i in items_to_remove:
+                                items.remove(i)
+
+                            # Save the updated cart data back to the file
+                            with open(CART_FILE, 'w', encoding='utf-8') as file:
+                                yaml.dump(cart_data, file)
+
+                        # Remove item from the treeview
+                        checkout_tree.delete(selected_item)
+                        
+                    except Exception as e:
+                        messagebox.showerror("Error", f"Failed to update cart file: {e}")
+
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to clear cart file: {e}")
             
