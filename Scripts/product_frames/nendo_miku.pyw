@@ -18,7 +18,7 @@ USERS_FILE = ACCOUNTS_DIR / 'users.yaml'
 ICON = P('./Assets/logour.png')
 yaml = YAML()
 
-Product = "Hatsune Miku Symphony: 2023 Ver"
+Product = "Hatsune Miku Symphony: 2023 Ver."
 
 # Remove the commas and convert to an integer kasi mag e-error sya
 brand_new = 2900
