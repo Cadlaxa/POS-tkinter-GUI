@@ -17,7 +17,7 @@ cadlaxa:
   contact_number: '09651993541'
   address: Blk 41 Lot 70 Phase 6 Dasma 3 Golden City Salawag Cavite
   house_number: near the water tank
-  logged: false
+  logged: true
 long user test:
   username: long user test
   password: pass

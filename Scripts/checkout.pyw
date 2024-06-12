@@ -302,7 +302,7 @@ def print_receipt(tree, change):
         address = user_data.get('address', '')
 
         # Validate contact number format
-        if not contact_number.isdigit() or len(contact_number) != 10:
+        if not contact_number.isdigit() or len(contact_number) != 11:
             contact_number = 'Invalid contact number'
 
         # Initialize receipt text with header and user details
@@ -594,14 +594,8 @@ def confirm_purchase():
                 if user_data.get('logged', False):
                     cname = user_name
 
-                selected_item = checkout_tree.selection()
-                if selected_item:
-                    item = checkout_tree.item(selected_item[0])
-                    item_values = item['values']
-                    item_name = item_values[0]
-                    product_type = item_values[1]
-                    packaging_type = item_values[3]
-
+                selected_items = checkout_tree.selection()
+                if selected_items:
                     # Load the YAML file contents
                     try:
                         yaml = YAML()
@@ -610,17 +604,25 @@ def confirm_purchase():
 
                         if cname in cart_data['cart']:
                             items = cart_data['cart'][cname]['items']
-                            items_to_remove = [i for i in items if i['Name'] == item_name and i['Product Type'] == product_type and i['Packaging'] == packaging_type]
-                            for i in items_to_remove:
-                                items.remove(i)
+                            for selected_item in selected_items:
+                                item = checkout_tree.item(selected_item)
+                                item_values = item['values']
+                                item_name = item_values[0]
+                                product_type = item_values[1]
+                                packaging_type = item_values[3]
+
+                                # Find and remove the items that match
+                                items_to_remove = [i for i in items if i['Name'] == item_name and i['Product Type'] == product_type and i['Packaging'] == packaging_type]
+                                for i in items_to_remove:
+                                    items.remove(i)
+
+                                # Remove item from the treeview
+                                checkout_tree.delete(selected_item)
 
                             # Save the updated cart data back to the file
                             with open(CART_FILE, 'w', encoding='utf-8') as file:
                                 yaml.dump(cart_data, file)
 
-                        # Remove item from the treeview
-                        checkout_tree.delete(selected_item)
-                        
                     except Exception as e:
                         messagebox.showerror("Error", f"Failed to update cart file: {e}")
 
