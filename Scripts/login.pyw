@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, ttk
 from ruamel.yaml import YAML
 import subprocess
-
+import os
 
 OUTPUT_PATH = P().parent
 ASSETS_PATH = OUTPUT_PATH / P(r"Assets/login_frame")
@@ -36,6 +36,13 @@ def read_users():
 
 def relative_to_assets(path: str) -> P:
     return ASSETS_PATH / P(path)
+
+def delete_yaml_file(file_path):
+    try:
+        os.remove(file_path)
+        print(f"The file {file_path} has been successfully deleted.")
+    except OSError as e:
+        print(f"Error: {file_path} : {e.strerror}")
 
 def get_login_data():
     username_or_email_from_login = entry_1.get()
@@ -68,6 +75,7 @@ def login():
             # Update the YAML file with the new user data
             with open(USERS_FILE, "w") as file:
                 yaml.dump(users, file)
+            delete_yaml_file("Accounts/login_data.yaml")
             window.destroy()
             categ_script()
             return
