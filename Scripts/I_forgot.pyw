@@ -100,9 +100,9 @@ def create_account():
         messagebox.showerror("Signup", "All fields are required.")
         return
     # Check password length
-    if len(new_password) < 8 or len(new_password) > 15:
+    if len(new_password) < 8:
         password.config(fg='red')
-        messagebox.showerror("Error", "Password must be highter than 8 and lower than 15 characters.")
+        messagebox.showerror("Error", "Password must be highter than 8 characters.")
         return
     else:
         password.config(fg='black')
