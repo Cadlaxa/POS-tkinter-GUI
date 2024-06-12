@@ -102,10 +102,16 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
 
 # Products
 def miku():
-    script_path = "Scripts/product_frames/authentic_miku.pyw"
+    script_path = "Scripts/product_frames/nendo_miku.pyw"
     subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 def kageyama():
     script_path = "Scripts/product_frames/nendo_kageyama.pyw"
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+def lucy():
+    script_path = "Scripts/product_frames/nendo_lucy.pyw"
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+def levi():
+    script_path = "Scripts/product_frames/nendo_levi.pyw"
     subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
 
 window = Tk()
@@ -178,7 +184,7 @@ button_2.bind('<Leave>', button_2_leave)
 
 # Product 3 (lucy)
 lucy_img = PhotoImage(file=relative_to_assets("button_3.png"))
-button_3 = Button(image=lucy_img, borderwidth=0, highlightthickness=0, command=lambda: print("button_3 clicked"), relief="flat")
+button_3 = Button(image=lucy_img, borderwidth=0, highlightthickness=0, command=lucy, relief="flat")
 button_3.place(x=585.0, y=220.0, width=245.59054565429688, height=352.1675720214844)
 button_hover_3 = load_and_resize_image("Assets/nendo_frame/button_3.png", scale_factor)
 def button_3_hover(e):
@@ -194,7 +200,7 @@ button_3.bind('<Leave>', button_3_leave)
 
 # Product 4 (levi)
 levi_imgg = PhotoImage(file=relative_to_assets("button_4.png"))
-button_4 = Button(image=levi_imgg, borderwidth=0, highlightthickness=0, command=lambda: print("button_4 clicked"), relief="flat")
+button_4 = Button(image=levi_imgg, borderwidth=0, highlightthickness=0, command=levi, relief="flat")
 button_4.place(x=856.0, y=220.0, width=245.59054565429688, height=352.1675720214844)
 button_hover_4 = load_and_resize_image("Assets/nendo_frame/button_4.png", scale_factor)
 def button_4_hover(e):

@@ -101,11 +101,19 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
         window.after(1000, count_items_in_cart)
 
 # Products
-'''
-def miku():
-    script_path = "Scripts/product_frames/authentic_miku.pyw"
+def kachan():
+    script_path = "Scripts/product_frames/resin_katsuki.pyw"
     subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
-'''
+def kirito():
+    script_path = "Scripts/product_frames/resin_kirigaya.pyw"
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+def nobu():
+    script_path = "Scripts/product_frames/resin_oda.pyw"
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+def sabito():
+    script_path = "Scripts/product_frames/resin_sabito.pyw"
+    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+
 
 window = Tk()
 window.geometry("1143x619")
@@ -145,7 +153,7 @@ image_4 = canvas.create_image(145.9810791015625, 60.89190673828125, image=image_
 
 # Product 1 (Sabito)
 sabito_img = PhotoImage(file=relative_to_assets("button_1.png"))
-button_1 = Button(image=sabito_img, borderwidth=0, highlightthickness=0, command=lambda: print("button_1 clicked"), relief="flat")
+button_1 = Button(image=sabito_img, borderwidth=0, highlightthickness=0, command=sabito, relief="flat")
 button_1.place(x=43.0, y=220.0, width=245.59054565429688, height=352.1675720214844)
 button_hover_1 = load_and_resize_image("Assets/resin_frame/button_1.png", scale_factor)
 def button_1_hover(e):
@@ -161,7 +169,7 @@ button_1.bind('<Leave>', button_1_leave)
 
 # Product 2 (bakugou)
 bakugou_img = PhotoImage(file=relative_to_assets("button_2.png"))
-button_2 = Button(image=bakugou_img, borderwidth=0, highlightthickness=0, command=lambda: print("button_2 clicked"), relief="flat")
+button_2 = Button(image=bakugou_img, borderwidth=0, highlightthickness=0, command=kachan, relief="flat")
 button_2.place(x=314.0, y=220.0, width=245.59054565429688, height=352.1675720214844)
 button_hover_2 = load_and_resize_image("Assets/resin_frame/button_2.png", scale_factor)
 def button_2_hover(e):
@@ -177,7 +185,7 @@ button_2.bind('<Leave>', button_2_leave)
 
 # Product 3 (kirito)
 kirito_img = PhotoImage(file=relative_to_assets("button_3.png"))
-button_3 = Button(image=kirito_img, borderwidth=0, highlightthickness=0, command=lambda: print("button_3 clicked"), relief="flat")
+button_3 = Button(image=kirito_img, borderwidth=0, highlightthickness=0, command=kirito, relief="flat")
 button_3.place(x=585.0, y=220.0, width=245.59054565429688, height=352.1675720214844)
 button_hover_3 = load_and_resize_image("Assets/resin_frame/button_3.png", scale_factor)
 def button_3_hover(e):
@@ -193,7 +201,7 @@ button_3.bind('<Leave>', button_3_leave)
 
 # Product 4 (nobunaga)
 nobunaga_img = PhotoImage(file=relative_to_assets("button_4.png"))
-button_4 = Button(image=nobunaga_img, borderwidth=0, highlightthickness=0, command=lambda: print("button_4 clicked"), relief="flat")
+button_4 = Button(image=nobunaga_img, borderwidth=0, highlightthickness=0, command=nobu, relief="flat")
 button_4.place(x=856.0, y=220.0, width=245.59054565429688, height=352.1675720214844)
 button_hover_4 = load_and_resize_image("Assets/resin_frame/button_4.png", scale_factor)
 def button_4_hover(e):
