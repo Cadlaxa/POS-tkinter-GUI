@@ -446,6 +446,7 @@ button_4.bind('<Leave>', on_leave_4)
 button_4.bind('<Motion>', on_motion_4)
 
 window.bind("<Escape>", logout)
+window.protocol("WM_DELETE_WINDOW", logout_mech)
 icon(window)
 center_window(window)
 window.resizable(False, False)
