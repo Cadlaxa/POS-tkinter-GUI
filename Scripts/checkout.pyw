@@ -405,7 +405,7 @@ def print_receipt(tree, change):
     """
 
         # Ask user to select a file location
-        file_path = filedialog.asksaveasfilename(initialfile="Arti-San Receipt.txt", defaultextension=".txt", filetypes=[("Text files", "*.txt")])
+        file_path = filedialog.asksaveasfilename(initialfile=f"Arti-San Receipt ({receipt_number}).txt", defaultextension=".txt", filetypes=[("Text files", "*.txt")])
         if file_path:
             # Save receipt to a UTF-8 encoded text file
             with open(file_path, 'w', encoding='utf-8') as f:
