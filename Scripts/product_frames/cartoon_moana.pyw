@@ -7,6 +7,7 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, ttk
 from ruamel.yaml import YAML
 import subprocess
 from PIL import Image, ImageTk
+import sys
 
 OUTPUT_PATH = P().parent
 ASSETS_PATH = OUTPUT_PATH / P(r"Assets/products/cartoon_moana")
@@ -100,7 +101,7 @@ def checkout_script():
 
 def remove_item_script():
         script_path = "Scripts/remove_items.pyw"
-        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+        subprocess.Popen([sys.executable, script_path])
 
 
 # Command function for the "Buy brand new/Pre-owned" button
@@ -514,7 +515,7 @@ def checkout_script_key(event):
         print("Error executing checkout script:", e)
 def remove_script(event):
     script_path = "Scripts/remove_items.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 window.bind("<Return>", checkout_script_key)
 window.bind("<BackSpace>", remove_script)
 

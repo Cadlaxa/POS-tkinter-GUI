@@ -5,6 +5,7 @@ from ruamel.yaml import YAML
 import subprocess
 import time
 from PIL import Image, ImageTk
+import sys
 
 OUTPUT_PATH = P().parent
 ASSETS_PATH = OUTPUT_PATH / P(r"Assets/categ_frame")
@@ -124,28 +125,28 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
 
 def cartoon_script(event):
     script_path = "Scripts/category_descriptions/cartoon.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 def nendo_script(event):
     script_path = "Scripts/category_descriptions/nendoroid.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 def authentic_script(event):
     script_path = "Scripts/category_descriptions/authentic.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 def resin_script(event):
     script_path = "Scripts/category_descriptions/resin.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 def authentic_product():
     script_path = "Scripts/authentic.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 def nendo_product():
     script_path = "Scripts/nendoroid.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 def resin_product():
     script_path = "Scripts/resin.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 def cartoon_product():
     script_path = "Scripts/cartoon.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 
 def logout(event):
     logout_mech()
@@ -199,7 +200,7 @@ def logout_mech():
     if ae_n_s_er:
         window.destroy()
         script_path = "Scripts/login.pyw"
-        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+        subprocess.Popen([sys.executable, script_path])
     else:
         return    
     
@@ -292,7 +293,7 @@ def checkout_script(event):
         print("Error executing checkout script:", e)
 def remove_script(event):
     script_path = "Scripts/remove_items.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 window.bind("<Return>", checkout_script)
 window.bind("<BackSpace>", remove_script)
 

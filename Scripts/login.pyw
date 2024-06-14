@@ -7,6 +7,7 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox, ttk
 from ruamel.yaml import YAML
 import subprocess
 import os
+import sys
 
 OUTPUT_PATH = P().parent
 ASSETS_PATH = OUTPUT_PATH / P(r"Assets/login_frame")
@@ -86,13 +87,13 @@ def login_key(event):
 
 def signup_script():
         script_path = "Scripts/signup.pyw"
-        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+        subprocess.Popen([sys.executable, script_path])
 def forgot_script():
         script_path = "Scripts/I_forgot.pyw"
-        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+        subprocess.Popen([sys.executable, script_path])
 def categ_script():
         script_path = "Scripts/categories.pyw"
-        subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+        subprocess.Popen([sys.executable, script_path])
 
 def icon(window):
     img = PhotoImage(file=ICON)

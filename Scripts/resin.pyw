@@ -4,6 +4,7 @@ from tkinter import Tk, Canvas, Button, PhotoImage, messagebox
 from ruamel.yaml import YAML
 from PIL import Image, ImageTk
 import subprocess
+import sys
 
 OUTPUT_PATH = P().parent
 ASSETS_PATH = OUTPUT_PATH / P(r"Assets/resin_frame")
@@ -103,16 +104,16 @@ def count_items_in_cart():    # use this function sa cart text     (count_items_
 # Products
 def kachan():
     script_path = "Scripts/product_frames/resin_katsuki.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 def kirito():
     script_path = "Scripts/product_frames/resin_kirigaya.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 def nobu():
     script_path = "Scripts/product_frames/resin_oda.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 def sabito():
     script_path = "Scripts/product_frames/resin_sabito.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 
 
 window = Tk()
@@ -132,7 +133,7 @@ def checkout_script(event):
         print("Error executing checkout script:", e)
 def remove_script(event):
     script_path = "Scripts/remove_items.pyw"
-    subprocess.Popen(['pythonw', script_path], startupinfo=subprocess.STARTUPINFO())
+    subprocess.Popen([sys.executable, script_path])
 window.bind("<Return>", checkout_script)
 window.bind("<BackSpace>", remove_script)
 
