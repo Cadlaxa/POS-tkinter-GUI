@@ -233,11 +233,12 @@ amount_paid_label.pack()
 
 def update_payment_status(payment_amount, total_price):
     amount_paid_label.config(text=f"Amount Paid: ₱{payment_amount:,.2f}")
+    '''
     if payment_amount >= total_price:
         receipt_button.config(state=tk.NORMAL)
     else:
         receipt_button.config(state=tk.DISABLED)
-        
+    '''
 def get_username_from_yaml():
     try:
         yaml = YAML()
@@ -656,10 +657,12 @@ confirm_purchase_button.pack(side=tk.RIGHT, padx=10)
 show_qr_button = tk.Button(button_frame, text="Pay with a device", command=lambda: display_qr_code(payment_link), bg="#46A9FF", font=("Montserrat ExtraBold", 10))
 show_qr_button.pack(side=tk.LEFT, padx=10)
 
+'''
 # Button to save receipt
 receipt_button = Button(button_frame, text="Save Receipt", command=lambda: print_receipt(checkout_tree, 0), bg="#46A9FF", font=("Montserrat ExtraBold", 10))
 receipt_button.pack(side=tk.LEFT, padx=10)
 receipt_button.config(state=tk.DISABLED)  # Disable save receipt button initially
+'''
 
 center_window(window)
 window.bind("<Escape>", quit)
