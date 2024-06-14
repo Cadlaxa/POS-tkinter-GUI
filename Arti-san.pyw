@@ -42,7 +42,7 @@ w.overrideredirect(1)
 def new_win():
     w.destroy()
     file_path = "Scripts/login.pyw"
-    subprocess.Popen(['pythonw', file_path])
+    subprocess.Popen(['pythonw', file_path], startupinfo=subprocess.STARTUPINFO())
 
 # Set a timer to open the new window after 3 seconds
 w.after(3000, new_win)
