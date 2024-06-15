@@ -7,7 +7,7 @@ admin:
   contact_number: '1234567890'
   address: address
   house_number: house
-  logged: true
+  logged: false
 cadlaxa:
   username: cadlaxa
   password: password
@@ -17,7 +17,7 @@ cadlaxa:
   contact_number: '09651993541'
   address: Blk 41 Lot 70 Phase 6 Dasma 3 Golden City Salawag Cavite
   house_number: near the water tank
-  logged: false
+  logged: true
 long user test:
   username: long user test
   password: pass
@@ -37,4 +37,14 @@ Ceslaxa:
   contact_number: '09751368069'
   address: B41 L70 Golden City Subd., Brgy. Salawag, Dasmarinas, Cavite
   house_number: .
+  logged: false
+binsuu:
+  username: binsuu
+  password: vince 123
+  email: vince@email.com
+  first_name: john vince
+  last_name: delfinado
+  contact_number: '0977895189'
+  address: shelter town buhay na tubig
+  house_number: blk 8 lot 3
   logged: false
