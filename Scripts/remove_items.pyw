@@ -147,11 +147,28 @@ def remove_item_window():
     remove_tree.column('Item Instance', width=80, anchor='c')
     remove_tree.column('Quantity', width=80, anchor='c')
     remove_tree.pack(fill='both')
+    
     # Load items from cart into the treeview
     load_cart_items(remove_tree)
     # Button to remove selected item
     remove_button = Button(window, text="Remove Item/s", bg="#31F5C2", font=("Montserrat ExtraBold", 10), command=lambda: remove_selected_item(remove_tree))
     remove_button.pack(fill='x')
+    
+    def on_treeview_click(event):
+        item = remove_tree.identify_row(event.y)
+        if item:
+            if item in remove_tree.selection():
+                remove_tree.selection_remove(item)
+            else:
+                remove_tree.selection_add(item)
+        return "break"  # Prevent the default behavior
+
+    def on_right_click(event):
+        remove_tree.selection_remove(remove_tree.selection())
+        
+    remove_tree.bind("<Button-1>", on_treeview_click) # left click to select, click the item again and it will deselect
+    remove_tree.bind("<Button-3>", on_right_click) # right click to deselect all
+
 remove_item_window()
 center_window(window)
 window.bind("<Escape>", quit)
