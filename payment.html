@@ -145,7 +145,7 @@
             
             // Send payment amount to Python script (or your server-side script)
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', "http://192.168.43.16:5500/payment.html");
+            xhr.open('POST', "http://192.168.102.34:5500/payment.html");
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function() {
                 console.log('Response status:', xhr.status);

@@ -17,7 +17,7 @@ cadlaxa:
   contact_number: '09651993541'
   address: Blk 41 Lot 70 Phase 6 Dasma 3 Golden City Salawag Cavite
   house_number: near the water tank
-  logged: true
+  logged: false
 long user test:
   username: long user test
   password: pass
@@ -47,4 +47,14 @@ binsuu:
   contact_number: '0977895189'
   address: shelter town buhay na tubig
   house_number: blk 8 lot 3
+  logged: true
+Jiafei:
+  username: Jiafei
+  password: '12345678'
+  email: jiafei@gmailcom
+  first_name: ja
+  last_name: fei
+  contact_number: '1234567890'
+  address: bacoor city
+  house_number: bahay
   logged: false

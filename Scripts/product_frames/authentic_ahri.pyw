@@ -593,6 +593,23 @@ button_4.place(x=923.0, y=527.0, width=171.0, height=39.08679962158203)
 image_image_8 = PhotoImage(file=relative_to_assets("image_8.png"))
 image_8 = canvas.create_image(919.0, 363.0, image=image_image_8)
 
+'''
+    def set_quantity(event=None):
+        nonlocal quantity
+        try:
+            entered_quantity = int(quantity_entry.get())
+            if entered_quantity > 0:
+                update_quantity(entered_quantity)  # Add the entered value to the current quantity
+            else:
+                raise ValueError("Negative quantity is not allowed")
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Please enter a valid quantity")
+            quantity_entry.delete(0, tk.END)
+            quantity_entry.insert(0, str(quantity))  # Reset to previous valid quantity
+
+    # Bind the set_quantity function to the <Return> event
+    quantity_entry.bind("<Return>", set_quantity)
+'''
 window.bind("<Escape>", quit)
 icon(window)
 center_window(window)

@@ -24,26 +24,35 @@ cart:
       Quantity: 5
   admin:
     items:
-    - Name: 'Boku no Hero Academia: Katsuki Bakugou'
+    - Name: 'League of Legends: Ahri-Star Guardian'
       Product Type: Brand New
-      Item Price: ₱14000
-      Packaging: Clampshell
-      Total Price (with or w/o box): ₱14300
-      Item Instance: '1'
-      Quantity: '1'
-    - Name: "Moana's Journey: The Spirit of the Ocean Solo Figurine"
-      Product Type: Pre-Owned
-      Item Price: ₱4050
+      Item Price: ₱25450
       Packaging: Boxed
-      Total Price (with or w/o box): ₱4250
-      Item Instance: '1'
-      Quantity: '1'
-    - Name: 'Sword Art Online: Kirigaya Kazuto'
-      Product Type: Brand New
-      Item Price: ₱13550
-      Packaging: Boxed
-      Total Price (with or w/o box): ₱68750
+      Total Price (with or w/o box): ₱359100
       Item Instance: 1
-      Quantity: 5
+      Quantity: 14
   binsuu:
-    items: []
+    items:
+    - Name: 'Chainsaw Man: Denji'
+      Product Type: Brand New
+      Item Price: ₱20599
+      Packaging: Boxed
+      Total Price (with or w/o box): ₱20799
+      Item Instance: 1
+      Quantity: 1
+    - Name: 'One Punch Man: Saitama'
+      Product Type: Brand New
+      Item Price: ₱15000
+      Packaging: Boxed
+      Total Price (with or w/o box): ₱15200
+      Item Instance: 1
+      Quantity: 1
+  Jiafei:
+    items:
+    - Name: 'League of Legends: Ahri-Star Guardian'
+      Product Type: Brand New
+      Item Price: ₱25450
+      Packaging: Clampshell
+      Total Price (with or w/o box): ₱128750
+      Item Instance: '1'
+      Quantity: '5'
