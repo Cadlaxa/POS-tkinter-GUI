@@ -637,6 +637,48 @@ def confirm_purchase():
     except ValueError:
         messagebox.showerror("Invalid Input", "Please enter a valid payment amount.")
 
+def remove_selected_item(tree):
+    selected_items = tree.selection()
+    if selected_items:
+        for item in selected_items:
+            tree.delete(item)
+        update_cart_file(tree)
+
+def update_cart_file(tree):
+    user_name = get_username_from_yaml()
+    if user_name is None:
+        messagebox.showinfo("Error", "No user logged in.")
+        return
+
+    # Load existing cart data
+    cart_data = {'cart': {}}
+    if CART_FILE.exists():
+        with open(CART_FILE, 'r', encoding='utf-8') as file:
+            cart_data = yaml.load(file) or cart_data
+
+    # Update cart items for the logged-in user
+    cname = user_name
+    user_cart = cart_data['cart'].get(cname, {'items': []})
+    user_cart['items'] = []
+
+    for item in tree.get_children():
+        name, product_type, packaging, price, price1, instance, quantity = tree.item(item, 'values')
+        user_cart['items'].append({
+            'Name': name,
+            'Product Type': product_type,
+            'Item Price': price,
+            'Packaging': packaging,
+            'Total Price (with or w/o box)': price1,
+            'Item Instance': instance,
+            'Quantity': quantity
+        })
+
+    cart_data['cart'][cname] = user_cart
+
+    # Write the updated cart data to the YAML file
+    with open(CART_FILE, 'w', encoding='utf-8') as file:
+        yaml.dump(cart_data, file)
+
 # Create a frame for buttons and place them at the bottom
 button_frame = ttk.Frame(window)
 button_frame.pack(side=tk.BOTTOM, pady=20)
@@ -657,6 +699,9 @@ confirm_purchase_button.pack(side=tk.RIGHT, padx=10)
 show_qr_button = tk.Button(button_frame, text="Pay with a device", command=lambda: display_qr_code(payment_link), bg="#46A9FF", font=("Montserrat ExtraBold", 10))
 show_qr_button.pack(side=tk.LEFT, padx=10)
 
+# Remove item button
+r_button = tk.Button(button_frame, text="Remove Item/s", command=lambda: remove_selected_item(checkout_tree), bg="#31F5C2", font=("Montserrat ExtraBold", 10))
+r_button.pack(side=tk.LEFT, padx=10)
 '''
 # Button to save receipt
 receipt_button = Button(button_frame, text="Save Receipt", command=lambda: print_receipt(checkout_tree, 0), bg="#46A9FF", font=("Montserrat ExtraBold", 10))
