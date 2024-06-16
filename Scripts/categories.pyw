@@ -449,20 +449,10 @@ button_4.bind('<Motion>', on_motion_4)
 window.bind("<Escape>", logout)
 window.protocol("WM_DELETE_WINDOW", logout_mech)
 
-button_4.bind('<Enter>', button_4_hover)
-button_4.bind('<Leave>', button_4_leave)
+logout_b = PhotoImage(file=relative_to_assets("button_5.png"))
+button_5 = Button(image=logout_b, borderwidth=0, highlightthickness=0, command= logout_mech, relief="flat")
+button_5.place(x=823.0, y=35.0, width=47.0, height=47.0)
 
-
-button_image_5 = PhotoImage(file=relative_to_assets("button_5.png"))
-button_5 = Button(image=button_image_5, borderwidth=0, highlightthickness=0, command= logout_mech,
-    relief="flat"
-)
-button_5.place(
-    x=823.0,
-    y=35.0,
-    width=47.0,
-    height=47.0
-)
 icon(window)
 center_window(window)
 window.resizable(False, False)

@@ -122,6 +122,8 @@ window.title(type)
 
 # Checkout and Remove Items keyboard shortcut
 def checkout_script(event):
+    checkout_script_1()
+def checkout_script_1():
     script_path = "Scripts/checkout.pyw"
     startup_info = subprocess.STARTUPINFO()
     startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -131,6 +133,8 @@ def checkout_script(event):
     except Exception as e:
         print("Error executing checkout script:", e)
 def remove_script(event):
+    remove_script_1()
+def remove_script_1():
     script_path = "Scripts/remove_items.pyw"
     subprocess.Popen([sys.executable, script_path])
 window.bind("<Return>", checkout_script)
@@ -233,6 +237,16 @@ image_8 = canvas.create_image(571.0, 61.0, image=image_image_8)
 
 canvas.create_text(478.0, 36.0, anchor="nw",
                    text=textheader, fill="#FFFFFF", font=("Montserrat SemiBold", 32 * -1))
+
+# Check-out Button
+checkout_button = PhotoImage(file=relative_to_assets("checkout.png"))
+button_5 = Button(image=checkout_button, borderwidth=0, highlightthickness=0, command=checkout_script_1, relief="flat")
+button_5.place(x=840.0, y=40.0, width=45.0, height=42.0)
+
+# Remove Items Button
+remove_items_b = PhotoImage(file=relative_to_assets("remove.png"))
+button_6 = Button(image=remove_items_b, borderwidth=0, highlightthickness=0, command=remove_script_1, relief="flat")
+button_6.place(x=790.0, y=40.0, width=45.0, height=42.0)
 
 window.bind("<Escape>", quit)
 icon(window)

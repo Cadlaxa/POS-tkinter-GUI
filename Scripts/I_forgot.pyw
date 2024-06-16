@@ -8,7 +8,6 @@ from ruamel.yaml import YAML
 import subprocess
 import os
 
-
 OUTPUT_PATH = P().parent
 ASSETS_PATH = OUTPUT_PATH / P(r"Assets/signup_frame")
 ACCOUNTS_DIR = P('./Accounts')
@@ -54,6 +53,7 @@ def write_users(users):
     with open(USERS_FILE, 'w') as file:
         yaml.dump(users, file)
 
+# Function to validate and insert data
 def validate_and_insert():
     
     # Load login data from YAML file
@@ -94,7 +94,7 @@ def create_account():
     new_username = nname.get()
     new_password = password.get()
     confirm_password = password_confirm.get()
-
+    
     # Check if all required fields are filled
     if not new_username or not new_password or not new_email or not new_fname or not new_lname or not new_cont or not new_address or not new_house:
         messagebox.showerror("Signup", "All fields are required.")
@@ -102,7 +102,7 @@ def create_account():
     # Check password length
     if len(new_password) < 8:
         password.config(fg='red')
-        messagebox.showerror("Error", "Password must be highter than 8 characters.")
+        messagebox.showerror("Error", "Password must be highter than 8 characters")
         return
     else:
         password.config(fg='black')
@@ -123,12 +123,12 @@ def create_account():
                 'house_number': new_house
             }
             write_users(users)
-            messagebox.showinfo("Signup", "Account created successfully!")
+            messagebox.showinfo("Hooray", "Account's data Changed!")
             delete_yaml_file("Accounts/login_data.yaml")
             window.destroy()
 
-def create_account_key():  
-    create_account()   
+def create_account_key(event):
+    create_account()
 
 window = Tk()
 window.geometry("1080x616")
@@ -161,9 +161,9 @@ logo = PhotoImage(file=relative_to_assets("image_6.png"))
 image_6 = canvas.create_image(105.0, 63.0, image=logo)
 
 canvas.create_text(97.0, 117.0, anchor="nw",
-    text="Oh no!", fill="#06D6A0", font=("Montserrat Regular", 40 * -1))
+    text="Oh no,", fill="#06D6A0", font=("Montserrat Regular", 40 * -1))
 canvas.create_text(97.0, 155.1761474609375, anchor="nw",
-    text="You Forgot", fill="#06D6A0", font=("Montserrat Black", 48 * -1))
+    text="You Forgot!", fill="#06D6A0", font=("Montserrat Black", 48 * -1))
 
 # Last name entry
 lname_img = PhotoImage(file=relative_to_assets("entry_3.png"))
@@ -175,10 +175,11 @@ canvas.create_text(81.0, 241.0, anchor="nw",
 
 # Email address
 email_img = PhotoImage(file=relative_to_assets("entry_1.png"))
-entry_bg_1 = canvas.create_image(266.21571350097656, 442.53604316711426, image=email_img)
+entry_bg_1 = canvas.create_image(359.5, 363.5, image=email_img)
 email = Entry(bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0)
-email.place(x=86.0, y=419.98974609375, width=360.4314270019531, height=43.092594146728516)
-canvas.create_text( 81.9063720703125, 398.0, anchor="nw", 
+email.place(x=272, y=341, width=175, height=43.092594146728516)
+canvas.create_text( 264.0,
+    319.0, anchor="nw", 
                    text="Email Address", fill="#000000", font=("Montserrat SemiBold", 13 * -1))
 
 # First name
@@ -191,10 +192,10 @@ canvas.create_text(268.0, 241.0, anchor="nw",
 
 # Contact no
 contact_img = PhotoImage(file=relative_to_assets("entry_2.png"))
-entry_bg_2 = canvas.create_image(267.21571350097656, 362.561372756958, image=contact_img)
+entry_bg_2 = canvas.create_image(165.8, 363.6, image=contact_img)
 contact = Entry(bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0)
-contact.place(x=87.0, y=340.01507568359375, width=360.4314270019531, height=43.092594146728516)
-canvas.create_text(82.4658203125, 319.0, anchor="nw", 
+contact.place(x=86.0, y=341, width=159, height=43.092594146728516)
+canvas.create_text(81.4658203125, 320.0, anchor="nw", 
                    text="Contact Number", fill="#000000", font=("Montserrat SemiBold", 13 * -1))
 
 def address_placeholder(address, placeholder_text):
@@ -215,34 +216,54 @@ def restore_address(event, address, placeholder_text):
 
 # Address
 address_img = PhotoImage(file=relative_to_assets("entry_5.png"))
-entry_bg_5 = canvas.create_image(268.21571350097656, 522.5360431671143, image=address_img)
+entry_bg_5 = canvas.create_image(266.21571350097656, 441.5, image=address_img)
 address = Entry(bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0)
-address.place(x=88.0, y=499.98974609375, width=360.4314270019531, height=43.092594146728516)
+address.place(x=87.0, y=419, width=360.4314270019531, height=43.092594146728516)
 address_placeholder(address, "Blk, lot, Phase, Subd, Brgy, City")
-canvas.create_text( 83.9063720703125, 478.0, anchor="nw",
+canvas.create_text( 79.9063720703125,
+    397.0, anchor="nw",
                    text="Address", fill="#000000", font=("Montserrat SemiBold", 13 * -1))
 
 # House Description
 house_img = PhotoImage(file=relative_to_assets("entry_7.png"))
-entry_bg_7 = canvas.create_image(805.2157135009766, 108.56137275695801,image=house_img)
+entry_bg_7 = canvas.create_image(162, 522.5,image=house_img)
 house = Entry(bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0)
-house.place(x=625.0, y=86.01507568359375, width=360.4314270019531, height=43.092594146728516)
-canvas.create_text(620.4658203125, 65.0, anchor="nw",
+house.place(x=84.5, y=500, width=155, height=43.092594146728516)
+canvas.create_text(78.4658203125,
+    476.0, anchor="nw",
                    text="House Description", fill="#000000", font=("Montserrat SemiBold", 13 * -1))
 
 # Username
 nname_img = PhotoImage(file=relative_to_assets("entry_6.png"))
-entry_bg_6 = canvas.create_image(804.2157135009766, 188.53604316711426, image=nname_img)
+entry_bg_6 = canvas.create_image(355.5, 522.5, image=nname_img)
 nname = Entry(bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0)
-nname.place(x=624.0, y=165.98974609375, width=360.4314270019531, height=43.092594146728516)
-canvas.create_text(619.9063720703125, 144.0, anchor="nw",
+nname.place(x=267.5, y=500.0, width=176, height=43.092594146728516)
+canvas.create_text(266.0,
+    479.0, anchor="nw",
                    text="Username", fill="#000000", font=("Montserrat SemiBold", 13 * -1))
+
+def pass_placeholder(password, placeholder_text):
+    password.insert(0, placeholder_text)
+    password.config(fg='grey')
+    password.bind("<FocusIn>", lambda event: clear_password(event, password, placeholder_text))
+    password.bind("<FocusOut>", lambda event: restore_password(event, password, placeholder_text))
+
+def clear_password(event, password, placeholder_text):
+    if password.get() == placeholder_text:
+        password.delete(0, tk.END)
+        password.config(fg='black')
+
+def restore_password(event, password, placeholder_text):
+    if not password.get():
+        password.insert(0, placeholder_text)
+        password.config(fg='grey')
 
 # Password
 password_img = PhotoImage(file=relative_to_assets("entry_8.png"))
 entry_bg_8 = canvas.create_image(806.2157135009766, 268.53604316711426, image=password_img)
 password = Entry(bd=0, bg="#FFFFFF", fg="#000716", highlightthickness=0)
 password.place(x=626.0, y=245.98974609375, width=360.4314270019531, height=43.092594146728516)
+pass_placeholder(password, "Password must atleat have 8 characters or more")
 canvas.create_text(621.9063720703125, 224.0, anchor="nw",
                    text="Password", fill="#000000",font=("Montserrat SemiBold", 13 * -1))
 
@@ -270,9 +291,8 @@ def button_1_leave(e):
 button_1.bind('<Enter>', button_1_hover)
 button_1.bind('<Leave>', button_1_leave)
 window.bind("<Return>", create_account_key)
-
-window.bind("<Escape>", quit)
 validate_and_insert()
+window.bind("<Escape>", quit)
 icon(window)
 center_window(window)
 window.resizable(False, False)

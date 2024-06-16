@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import Tk, Entry, Button, PhotoImage, messagebox, ttk, filedialog
 import datetime
 from ruamel.yaml import YAML
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageDraw, ImageFont
 import qrcode
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
@@ -406,16 +406,43 @@ def print_receipt(tree, change):
     """
 
         # Ask user to select a file location
-        file_path = filedialog.asksaveasfilename(initialfile=f"Arti-San Receipt ({receipt_number}).txt", defaultextension=".txt", filetypes=[("Text files", "*.txt")])
+        file_path = filedialog.asksaveasfilename(
+            initialfile=f"Arti-San Receipt ({receipt_number}).png", 
+            defaultextension=".png", 
+            filetypes=[("PNG files", "*.png")]
+        )
         if file_path:
-            # Save receipt to a UTF-8 encoded text file
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write(receipt_text)
-            response = messagebox.askquestion("Receipt Saved", f"The receipt has been saved to:\n{file_path}\nDo you want to view your receipt?")
+            # Create an image with the receipt text
+            font_path = "Assets/Montserrat_static_fonts/Montserrat-Medium.ttf"
+            font_size = 20
+            line_spacing = 15
+            font = ImageFont.truetype(font_path, font_size)
+
+            # Create a dummy image to calculate the size
+            dummy_image = Image.new('RGB', (1, 1), color='white')
+            draw = ImageDraw.Draw(dummy_image)
+            
+            # Determine the size of the image
+            text_bbox = draw.textbbox((10, 10), receipt_text, font=font)
+            max_line_width = text_bbox[2] - text_bbox[0]
+            total_height = text_bbox[3] - text_bbox[1]
+
+            # Create a new image with a white background
+            image = Image.new('RGB', (max_line_width + 20, total_height + 20), color='white')
+            draw = ImageDraw.Draw(image)
+            
+            # Draw the text on the image
+            draw.text((10, 10), receipt_text, font=font, fill='black')
+            
+            # Save the image
+            image.save(file_path)
+            
+            response = messagebox.askquestion(
+                "Receipt Saved", 
+                f"The receipt has been saved to:\n{file_path}\nDo you want to view your receipt?"
+            )
             if response == "yes":
                 try:
-                    # Open the file using default application
-                    import os
                     os.startfile(file_path)
                 except Exception as e:
                     messagebox.showerror("Error", f"Unable to open the file: {str(e)}")
@@ -662,14 +689,14 @@ def update_cart_file(tree):
     user_cart['items'] = []
 
     for item in tree.get_children():
-        name, product_type, packaging, price, price1, instance, quantity = tree.item(item, 'values')
+        name, product_type, packaging, price, price1, quantity = tree.item(item, 'values')
         user_cart['items'].append({
             'Name': name,
             'Product Type': product_type,
             'Item Price': price,
             'Packaging': packaging,
             'Total Price (with or w/o box)': price1,
-            'Item Instance': instance,
+            'Item Instance': 1,
             'Quantity': quantity
         })
 

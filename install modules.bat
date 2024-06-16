@@ -30,7 +30,7 @@ pip install pillow
 pip install qrcode
 
 :: Define the source and intermediate directories
-set "intermediate_dir=%cd%POS-tkinter-GUI\Assets\Montserrat_static_fonts"
+set "intermediate_dir=%cd%POS-tkinter-GUI\Assets\Montserrat _static_fonts"
 set "target_font_dir=C:\Windows\Fonts"
 
 :: Install TTF fonts
